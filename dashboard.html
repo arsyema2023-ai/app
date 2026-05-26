@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Belajar — MedicEd</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--deep-void:#060E13;--clinical-navy:#0A1922;--muted-steel:#112431;
+--piercing-teal:#00C9A7;--surgical-white:#E6F1FF;--ghost-text:#5B7A8C;
+--card-bg:#0A1922;--text-main:#E6F1FF;--text-sec:#5B7A8C;
+}
+:root[data-theme="light"]{
+--deep-void:#f0f4f8;--clinical-navy:#ffffff;--muted-steel:#d0d7de;
+--piercing-teal:#008f7a;--surgical-white:#1a2332;--ghost-text:#5a6b7b;
+--card-bg:#ffffff;--text-main:#1a2332;--text-sec:#5a6b7b;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Montserrat',sans-serif;background:var(--deep-void);color:var(--text-main);-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--deep-void)}
+::-webkit-scrollbar-thumb{background:var(--muted-steel);border-radius:3px}
+::selection{background:rgba(0,201,167,0.3);color:var(--text-main)}
+a{color:inherit;text-decoration:none}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:300px;flex-shrink:0;background:var(--clinical-navy);border-right:1px solid var(--muted-steel);display:flex;flex-direction:column;transition:transform .3s,background .3s;position:relative;z-index:50;max-height:100vh}
+.sidebar-header{padding:18px 20px;border-bottom:1px solid var(--muted-steel)}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ghost-text);margin-bottom:12px;transition:color .2s}
+.back-btn:hover{color:var(--piercing-teal)}
+.logo{font-size:18px;font-weight:700;color:var(--surgical-white)}
+.logo span{color:var(--piercing-teal)}
+.sub{font-size:12px;color:var(--ghost-text);margin-top:4px}
+.sidebar-tools{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid var(--muted-steel);align-items:center}
+.sidebar-search{flex:1;position:relative}
+.sidebar-search input{width:100%;background:var(--deep-void);border:1px solid var(--muted-steel);border-radius:8px;padding:9px 10px 9px 34px;font-family:inherit;font-size:12px;color:var(--text-main);outline:none;transition:border-color .2s}
+.sidebar-search input::placeholder{color:var(--ghost-text)}
+.sidebar-search input:focus{border-color:var(--piercing-teal)}
+.sidebar-search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ghost-text);pointer-events:none}
+.theme-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--muted-steel);background:transparent;color:var(--ghost-text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.theme-btn:hover{border-color:var(--piercing-teal);color:var(--piercing-teal)}
+.sidebar-content{flex:1;overflow-y:auto;padding:8px 12px 16px}
+.mod-group{margin-bottom:2px}
+.mod-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ghost-text);cursor:pointer;border:none;background:none;font-family:inherit;text-align:left;transition:all .2s}
+.mod-btn:hover,.mod-btn.active{background:rgba(0,201,167,0.1);color:var(--piercing-teal)}
+.mod-btn.active svg{transform:rotate(90deg)}
+.mod-btn svg{transition:transform .2s;flex-shrink:0}
+.sub-list{padding-left:10px;display:none;max-height:200px;overflow-y:auto}
+.sub-list.open{display:block}
+.sub-item{width:100%;padding:7px 12px;border-radius:6px;font-size:12px;color:var(--ghost-text);cursor:pointer;border:none;background:none;font-family:inherit;text-align:left;transition:all .2s;display:flex;align-items:center;justify-content:space-between;margin-bottom:1px}
+.sub-item:hover{color:var(--text-main)}
+.sub-item.active{background:rgba(0,201,167,0.1);color:var(--piercing-teal)}
+.bookmark-dot{width:6px;height:6px;border-radius:50%;background:var(--piercing-teal);flex-shrink:0;display:none}
+.bookmark-dot.show{display:block}
+
+/* MAIN */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;max-height:100vh}
+.topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--clinical-navy);border-bottom:1px solid var(--muted-steel);flex-shrink:0;transition:background .3s}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ghost-text)}
+.breadcrumb span:last-child{color:var(--text-main)}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.lang-toggle{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--muted-steel);background:var(--card-bg);color:var(--ghost-text);font-family:inherit;transition:all .2s}
+.lang-toggle:hover{border-color:var(--piercing-teal);color:var(--piercing-teal)}
+.lang-toggle.active{border-color:var(--piercing-teal);background:rgba(0,201,167,0.1);color:var(--piercing-teal)}
+.icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--muted-steel);background:transparent;color:var(--ghost-text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:inherit;font-size:12px}
+.icon-btn:hover{border-color:var(--piercing-teal);color:var(--piercing-teal)}
+.icon-btn.active{background:rgba(0,201,167,0.1);border-color:var(--piercing-teal);color:var(--piercing-teal)}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:28px 24px}
+.content-inner{max-width:860px;margin:0 auto}
+.content-header{margin-bottom:24px}
+.content-mod{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px;color:var(--piercing-teal);font-weight:500}
+.content-title{font-size:26px;font-weight:700;color:var(--text-main);letter-spacing:-.5px;line-height:1.2}
+.content-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.content-card{background:var(--card-bg);border:1px solid var(--muted-steel);border-radius:12px;padding:28px;margin-bottom:24px;transition:background .3s,border-color .3s}
+.content-label{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.content-label .dot{width:8px;height:8px;border-radius:50%;background:var(--piercing-teal)}
+.content-label span{font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--ghost-text)}
+.content-text{font-size:15px;line-height:1.8;color:var(--text-main);opacity:.9}
+
+/* NOTES */
+.notes-section{margin-top:20px;padding-top:20px;border-top:1px solid var(--muted-steel)}
+.notes-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:13px;font-weight:600;color:var(--piercing-teal)}
+.notes-textarea{width:100%;min-height:100px;background:var(--deep-void);border:1px solid var(--muted-steel);border-radius:8px;padding:12px;font-family:inherit;font-size:13px;color:var(--text-main);outline:none;resize:vertical;transition:all .3s}
+.notes-textarea:focus{border-color:var(--piercing-teal)}
+
+/* QUIZ */
+.quiz-section{margin-top:24px;padding-top:24px;border-top:1px solid var(--muted-steel)}
+.quiz-header{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:14px;font-weight:600;color:var(--piercing-teal)}
+.quiz-card{background:var(--card-bg);border:1px solid var(--muted-steel);border-radius:10px;padding:20px;margin-bottom:12px}
+.quiz-question{font-size:14px;font-weight:600;color:var(--text-main);margin-bottom:12px}
+.quiz-options{display:flex;flex-direction:column;gap:8px}
+.quiz-option{padding:10px 14px;border-radius:8px;border:1px solid var(--muted-steel);background:var(--deep-void);color:var(--text-main);font-family:inherit;font-size:13px;cursor:pointer;text-align:left;transition:all .2s}
+.quiz-option:hover{border-color:var(--piercing-teal)}
+.quiz-option.correct{background:rgba(0,201,167,0.15);border-color:var(--piercing-teal)}
+.quiz-option.wrong{background:rgba(255,80,80,0.15);border-color:#ff5050}
+.quiz-explanation{font-size:13px;color:var(--ghost-text);margin-top:10px;padding:10px;background:rgba(0,201,167,0.05);border-radius:6px;display:none}
+.quiz-explanation.show{display:block}
+
+/* ABBREVIATIONS */
+.abb-section{margin-top:24px}
+.abb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.abb-card{background:var(--card-bg);border:1px solid var(--muted-steel);border-radius:8px;padding:14px;display:flex;align-items:flex-start;gap:12px}
+.abb-short{font-size:16px;font-weight:700;color:var(--piercing-teal);min-width:60px}
+.abb-full{font-size:13px;color:var(--text-main)}
+.abb-desc{font-size:12px;color:var(--ghost-text);margin-top:2px}
+
+/* NAVIGATION */
+.page-nav{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}
+.page-nav button{padding:10px 20px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-prev{background:var(--card-bg);border:1px solid var(--muted-steel);color:var(--text-main)}
+.btn-prev:hover{border-color:var(--piercing-teal)}
+.btn-prev:disabled{opacity:.3;cursor:not-allowed}
+.btn-next{background:var(--piercing-teal);border:1px solid var(--piercing-teal);color:#060E13}
+.btn-next:hover{box-shadow:0 0 20px rgba(0,201,167,0.3)}
+.btn-next:disabled{opacity:.3;cursor:not-allowed}
+.progress-dots{display:flex;gap:6px;align-items:center}
+.progress-dot{width:8px;height:8px;border-radius:50%;background:var(--muted-steel);transition:all .2s;cursor:pointer}
+.progress-dot.active{width:20px;background:var(--piercing-teal)}
+
+/* BOOKMARKS PANEL */
+.panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:60}
+.panel-overlay.open{display:block}
+.panel{position:fixed;right:0;top:0;bottom:0;width:360px;background:var(--clinical-navy);border-left:1px solid var(--muted-steel);z-index:70;transform:translateX(100%);transition:transform .3s,background .3s;overflow-y:auto}
+.panel.open{transform:translateX(0)}
+.panel-header{padding:20px;border-bottom:1px solid var(--muted-steel);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-size:16px;font-weight:600;color:var(--text-main)}
+.panel-close{background:none;border:none;color:var(--ghost-text);cursor:pointer;padding:4px}
+.panel-close:hover{color:var(--piercing-teal)}
+.panel-content{padding:16px}
+.bookmark-item{padding:12px;background:var(--card-bg);border:1px solid var(--muted-steel);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.bookmark-item:hover{border-color:var(--piercing-teal)}
+.bookmark-item-title{font-size:13px;font-weight:600;color:var(--text-main)}
+.bookmark-item-mod{font-size:11px;color:var(--ghost-text);margin-top:4px}
+.empty-state{text-align:center;padding:40px 20px;color:var(--ghost-text);font-size:13px}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--card-bg);border:1px solid var(--muted-steel);border-radius:8px;padding:4px}
+.tab{flex:1;padding:10px 12px;border-radius:6px;border:none;background:none;font-family:inherit;font-size:12px;font-weight:500;color:var(--ghost-text);cursor:pointer;transition:all .2s;text-align:center}
+.tab:hover{color:var(--text-main)}
+.tab.active{background:rgba(0,201,167,0.1);color:var(--piercing-teal)}
+
+/* SEARCH */
+.search-results{display:none}
+.search-results.open{display:block}
+.search-item{padding:10px 12px;border-radius:6px;cursor:pointer;transition:background .2s;margin-bottom:2px}
+.search-item:hover{background:rgba(0,201,167,0.08)}
+.search-item-title{font-size:13px;color:var(--text-main);display:flex;align-items:center;gap:8px}
+.search-item-mod{font-size:11px;color:var(--ghost-text);margin-top:2px;padding-left:24px}
+.no-results{padding:16px 12px;font-size:13px;color:var(--ghost-text);text-align:center}
+
+/* MOBILE */
+.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40}
+.mobile-overlay.open{display:block}
+.mobile-toggle{display:none;background:none;border:none;color:var(--text-main);cursor:pointer;padding:8px}
+@media(max-width:768px){
+.sidebar{position:fixed;inset-y:0;left:0;transform:translateX(-100%);width:280px}
+.sidebar.open{transform:translateX(0)}
+.mobile-overlay.open{display:block}
+.mobile-toggle{display:block}
+.content{padding:20px 16px}
+.content-title{font-size:20px}
+.page-nav{flex-wrap:wrap}
+.progress-dots{display:none}
+.panel{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-header">
+<a href="index.html" class="back-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Kembali</a>
+<div class="logo">Medic<span>Ed</span></div>
+<div class="sub">Dashboard Belajar FKIK UNJA</div>
+</div>
+<div class="sidebar-tools">
+<div class="sidebar-search">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+<input type="text" id="searchInput" placeholder="Cari materi..." oninput="handleSearch(this.value)">
+</div>
+<button class="theme-btn" onclick="toggleTheme()" title="Ganti tema"><span id="themeIcon">&#9728;</span></button>
+</div>
+<div class="sidebar-content" id="sidebarContent">
+<div id="modulesList"></div>
+<div class="search-results" id="searchResults"></div>
+</div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+<header class="topbar">
+<div style="display:flex;align-items:center;gap:12px">
+<button class="mobile-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+<div class="breadcrumb" id="breadcrumb"></div>
+</div>
+<div class="topbar-actions">
+<button class="icon-btn" id="bookmarkBtn" onclick="toggleBookmark()" title="Bookmark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+<button class="icon-btn" onclick="openPanel('bookmarks')" title="Daftar Bookmark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/><path d="M12 5v14M5 12h14"/></svg></button>
+<button class="icon-btn" onclick="openPanel('abbreviations')" title="Singkatan Medis"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4M7 11h6M7 15h3"/></svg></button>
+<button class="lang-toggle" id="langToggle" onclick="toggleLang()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l4-4M12 14l4-4M19 8l-6 6M2 5h20M2 19h20"/></svg> <span id="langLabel">Bahasa Kedokteran</span></button>
+</div>
+</header>
+<div class="content"><div class="content-inner" id="contentArea"></div></div>
+</main>
+
+<!-- PANEL: Bookmarks -->
+<div class="panel-overlay" id="panelOverlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+<div class="panel-header"><span class="panel-title" id="panelTitle">Bookmark</span><button class="panel-close" onclick="closePanel()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div class="panel-content" id="panelContent"></div>
+</div>
+</div>
+
+<script>
+// ======================== DATA: 6 Modules, 45+ Topics ========================
+const modules=[
+{
+id:'neuro1',title:'Neuroanatomi I',icon:'brain',
+topics:[
+{title:'Sistem Saraf Pusat (SSP)',medical:'Central Nervous System (CNS) terdiri dari enchephalon (otak) dan medulla spinalis (sumsum tulang belakang). CNS dibungkus oleh meninges dan dikelilingi oleh cerebrospinal fluid. Berfungsi menerima, mengolah, dan memberikan respons terhadap rangsangan. CNS terbagi menjadi cerebrum, cerebellum, brain stem, dan medulla spinalis.',simple:'SSP adalah pusat kendali tubuh yang terdiri dari otak dan sumsum tulang belakang. Dilindungi oleh 3 lapis selaput (meninges) dan cairan pelindung (CSF). Fungsinya menerima, mengolah, dan memberikan respons terhadap rangsangan dari luar dan dalam tubuh.'},
+{title:'Neuron & Strukturnya',medical:'Neuron terdiri dari badan sel (soma) yang berisi nukleus, dendrit yang menerima sinyal, dan akson yang mengirim sinyal. Synapsis adalah junction antara neuron presinaptik dan postsinaptik. Motor neuron lebih besar dari sensory neuron. Axon ditutupi myelin sheath yang dihasilkan oleh oligodendrosit di CNS dan Schwann cells di PNS.',simple:'Neuron adalah sel saraf. Ada 3 bagian utama: badan sel (pusat metabolisme), dendrit (menerima pesan), dan akson (mengirim pesan). Sinapsis adalah tempat neuron berkomunikasi satu sama lain. Akson dibungkus selubung mielin untuk mempercepat pengiriman sinyal.'},
+{title:'Neuroglia (Sel Pendukung)',medical:'Neuroglia terdiri dari: Astrosit (support metabolis, membentuk blood-brain barrier), Oligodendrosit (membentuk mielin di CNS), Mikroglia (fungsi imun/fagositosis), Ependim (melapisi ventrikel dan memproduksi CSF), dan Schwann cells (membentuk mielin di PNS). Neuroglia berjumlah 10x lebih banyak dari neuron.',simple:'Neuroglia adalah sel pendukung neuron. Astrosit membantu nutrisi, Oligodendrosit membungkus saraf seperti selubung kabel, Mikroglia sebagai sistem kekebalan, Ependim memproduksi cairan otak, dan Sel Schwann membungkus saraf di luar otak.'},
+{title:'Cerebrum (Telencephalon)',medical:'Cerebrum terdiri dari 2 hemisfer dengan korteks serebral (gray matter) dan white matter. Memiliki 4 lobus: frontalis (motorik, eksekutif), parietalis (somatosensori), temporalis (pendengaran, memori), dan oksipitalis (penglihatan). Sulcus sentralis memisahkan frontal dan parietal. Corpus callosum menghubungkan kedua hemisfer. White matter mengandung serat mielin dan tidak mengandung badan sel saraf.',simple:'Cerebrum adalah bagian terbesar otak dengan 2 belahan yang dihubungkan oleh corpus callosum. Ada 4 bagian utama: frontal (depan, untuk pemikiran dan gerakan), parietal (tengah, untuk raba), temporal (samping, untuk mendengar dan ingatan), dan oksipital (belakang, untuk melihat).'},
+{title:'Thalamus & Hypothalamus',medical:'Thalamus adalah stasiun relay terbesar di bawah korteks untuk semua impuls sensorik eksteroseptif dan proprioseptif. Berfungsi integrasi dan koordinasi, memodulasi fungsi motorik dari cerebellum dan kortex. Hypothalamus mengatur suhu tubuh, denyut jantung, tekanan darah, keseimbangan air, neurosekresi, dan asupan gizi. Terletak di diencephalon, ventral ke lobus frontal.',simple:'Thalamus adalah pusat pengaturan sensorik di otak - semua informasi indra melewati thalamus sebelum ke korteks. Hypothalamus mengatur banyak fungsi tubuh: suhu, detak jantung, tekanan darah, rasa haus/lapar, dan sistem endokrin.'},
+{title:'Brain Stem & Cerebellum',medical:'Brain stem terdiri dari midbrain (mesencephalon), pons, dan medulla oblongata. Mengandung ARAS (Ascending Reticular Activating System) yang mengatur kesadaran. Cerebellum adalah organ sentral untuk kontrol motorik halus, keseimbangan, dan postur. Terdiri dari vermis dan dua hemisfer, terhubung ke brain stem oleh 3 pedunculus serebellar. Secara fungsional: vestibulocerebellum, spinocerebellum, dan cerebrocerebellum.',simple:'Batang otak menghubungkan otak ke sumsum tulang belakang, terdiri dari 3 bagian: otak tengah, pons, dan medulla oblongata. Cerebellum (otak kecil) mengontrol keseimbangan dan gerakan halus seperti menulis, bermain musik, dan bersepeda.'},
+{title:'Medulla Spinalis',medical:'Medulla spinalis terdiri dari gray matter (bentuk H dengan tanduk anterior dan posterior) dan white matter (kolom anterior, lateral, posterior). Terdapat 31 pasang saraf spinal: 8 servikal, 12 toraks, 5 lumbal, 5 sakral, 1 koksigeal. Tiap segmen punya 4 akar: 2 akar ventralis (motorik) dan 2 akar dorsalis (sensorik). Dermatom adalah area kulit yang disuplai oleh satu saraf spinal.',simple:'Sumsum tulang belakang berada di dalam tulang belakang, terdiri dari zat abu-abu (bentuk huruf H) dan zat putih. Ada 31 pasang saraf yang keluar dari sumsum tulang belakang: 8 dari leher, 12 dari dada, 5 dari pinggang, 5 dari tulang ekor.'},
+{title:'Ascending Tracts',medical:'Traktus asenden membawa informasi sensorik ke otak. Lateral Spinothalamic Tract: nyeri dan suhu. Anterior Spinothalamic Tract: sentuhan kasar dan tekanan. Fasciculus gracilis & cuneatus: propriosepsi dan sentuhan halus. Proyeksi ke korteks somatosensori di post centralis gyrus.',simple:'Jalur naik membawa informasi indra ke otak: jalur spinothalamic lateral untuk nyeri dan panas, jalur spinothalamic anterior untuk sentuhan, dan fasciculus gracilis/cuneatus untuk posisi tubuh dan sentuhan halus.'},
+{title:'Descending Tracts (Corticospinal)',medical:'Traktus kortikospinal mengontrol gerakan volunter. Fibers dari korteks serebral (layer 5, pyramidal cells) melewati corona radiata dan posterior limb of internal capsule, membentuk piramid di medulla, lalu decussatio pyramidum sebelum masuk ke spinal cord. Lateral corticospinal tract (crossed fibers) dan anterior corticospinal tract (uncrossed fibers).',simple:'Jalur turun mengontrol gerakan sadar. Sinyal dari otak turun melalui kapsul internal, membentuk piramid di medulla, lalu menyilang sebagian besar ke sumsum tulang belakang untuk mengontrol otot.'},
+{title:'Blood Supply of the Brain',medical:'Otak disuplai oleh 2 arteri karotis interna (70-80% darah) dan 2 arteri vertebralis (20-30%). Arteri vertebralis bergabung membentuk basilar artery yang bercabang menjadi 2 posterior cerebral arteries. Circulus arteriosus (Circle of Willis) terbentuk dari anastomosis antara sistem karotis dan vertebrobasilar di dasar otak. Vena otak tidak memiliki katup.',simple:'Otak mendapat darah dari 4 arteri utama: 2 di leher depan (karotis) dan 2 di belakang (vertebralis). Arteri-arteri ini saling berhubungan membentuk lingkaran pengaman di dasar otak yang disebut Lingkaran Willis. Vena otak unik karena tidak punya katup.'},
+{title:'Meninges & CSF',medical:'Tiga lapis meninges: Dura mater (paling luar, tebal/fibrosa, periosteal layer + meningeal layer), Arachnoid mater (tengah, avaskular, tidak berpembuluh darah), Pia mater (paling dalam, menempel erat ke otak, berpembuluh darah). Subarachnoid space mengandung CSF. CSF diproduksi oleh choroid plexus (500ml/hari, volume total 150ml). CSF beredar: ventrikel lateral → foramen Monroi → ventrikel III → aqueductus Sylvii → ventrikel IV → foramen Luschka & Magendi → subarachnoid → granulasi arachnoid → sinus sagitalis.',simple:'Otak dilindungi oleh 3 lapis selaput: Dura (paling tebal), Arachnoid (menengah), dan Pia (paling tipis menempel ke otak). Cairan otak (CSF) diproduksi di ventrikel, mengalir mengelilingi otak dan sumsum tulang belakang, lalu diserap kembali.'}
+]
+},
+{
+id:'neuro2',title:'Neuroanatomi II',icon:'layers',
+topics:[
+{title:'Meninges & Cranial Scalp',medical:'Meninges terdiri dari Dura mater (Pachymeninx) dengan 2 layer: periosteal layer melapisi tulang kranium dan meningeal layer (satu-satunya layer di vertebral column). Arachnoid mater avaskular. Pia mater sangat vaskular dan menempel erat ke otak. Scalp terdiri dari 5 layer: Skin, Connective tissue, Aponeurosis, Loose areolar tissue, Pericranium. A. meningea anterior dari a. ethmoidalis, A. meningea media dari a. maxillaris, A. meningea posterior dari a. pharingea ascendens.',simple:'Selaput otak terdiri dari 3 lapis: Dura (terluar dan terkuat), Arachnoid (menengah), dan Pia (terdalam menempel ke otak). Kulit kepala (scalp) memiliki 5 lapisan. Arteri meningea membawa darah ke selaput otak.'},
+{title:'Ventricles & CSF Pathway',medical:'Empat ventrikel: 2 lateral ventricles (terbesar, di hemisfer), ventrikel III (di diencephalon, narrow cleft), ventrikel IV (di belakang pons dan medulla, pyramid-shaped). CSF mengalir: lateral ventricles → interventricular foramen (foramen Monroi) → third ventricle → cerebral aqueduct (aqueductus Sylvii) → fourth ventricle → foramen Luschka (lateral) & foramen Magendi (medial) → subarachnoid space → arachnoid granulations → superior sagittal sinus. Hydrocephalus terjadi jika CSF tidak terserap atau produksi berlebih.',simple:'Ada 4 ruang berisi cairan di dalam otak. Cairan mengalir dari ventrikel samping ke ventrikel ketiga, lalu ke ventrikel keempat, kemudian keluar mengelilingi otak, dan akhirnya diserap ke pembuluh darah.'},
+{title:'Brain Lobes & Functions',medical:'Lobus frontalis: motorik primer (precentral gyrus), area eksekutif, personalitas, speech (Broca area). Lobus parietalis: somatosensori (postcentral gyrus), integrasi spasial. Lobus temporalis: pendengaran, memori, wicara (Wernicke area). Lobus oksipitalis: penglihatan. Insula: rasa, visceral sensation. Sulkus sentralis memisahkan frontal dan parietal. Fissura lateralis memisahkan temporal dari frontal/parietal.',simple:'Otak bagian depan (frontal) mengontrol gerakan dan pikiran. Bagian tengah (parietal) untuk rasa sentuh. Bagian samping (temporal) untuk mendengar dan ingatan. Bagian belakang (oksipital) untuk melihat.'},
+{title:'Cerebrovascular Anatomy',medical:'Anterior circulation (internal carotid artery): supplies frontal, temporal, parietal lobes, diencephalon. Branches: ophthalmic artery, posterior communicating artery, anterior choroidal artery, anterior cerebral artery (ACA), middle cerebral artery (MCA). Posterior circulation (vertebrobasilar system): supplies occipital lobe, brainstem, cerebellum. Vertebral arteries → basilar artery → posterior cerebral arteries (PCA) + cerebellar arteries.',simple:'Peredaran darah di otak: sistem depan (karotis) mensuplai otak depan dan tengah, sistem belakang (vertebrobasilar) mensuplai otak belakang, batang otak, dan cerebellum.'},
+{title:'Circle of Willis',medical:'Circulus arteriosus Willis terletak di interpeduncular fossa di dasar otak. Terbentuk dari anastomosis: 2 internal carotid arteries + 2 vertebral arteries. Komponen: anterior cerebral arteries → anterior communicating artery → posterior communicating artery → posterior cerebral arteries. Fungsi: kolateral circulation, jika satu arteri tersumbat, darah masih bisa mengalir melalui jalur alternatif.',simple:'Lingkaran Willis adalah jalur pengaman darah di dasar otak. Jika salah satu arteri tersumbat, lingkaran ini memungkinkan darah mengalir melalui jalur alternatif sehingga otak tetap mendapat suplai darah.'},
+{title:'Venous Drainage & Dural Sinuses',medical:'Vena serebral tidak memiliki muscular tissue dan valves. Superficial venous system: superior cerebral veins drain ke superior sagittal sinus. Deep venous system: internal cerebral veins (formed by thalamostriate + choroid veins) drain ke straight sinus. Dural venous sinuses: superior sagittal sinus, inferior sagittal sinus, straight sinus, transverse sinus, sigmoid sinus → internal jugular vein.',simple:'Darah dari otak mengalir melalui vena superfisial dan dalam ke sinus venosus (sinus sagitalis, transversus, sigmoid), lalu ke vena jugularis interna dan kembali ke jantung. Vena otak tidak punya katup.'},
+{title:'Midbrain (Mesencephalon)',medical:'Midbrain terletak antara diencephalon dan pons. Mengandung: superior colliculi (refleks visual) dan inferior colliculi (refleks auditory). Cerebral aqueduct menghubungkan ventrikel III dan IV. Substantia nigra (produksi dopamine, motorik). Red nucleus (motorik). Oculomotor nerve (CN III) dan Trochlear nerve (CN IV) bermula di midbrain.',simple:'Otak tengah (midbrain) berada di antara thalamus dan pons. Mengandung kolikulus atas (refleks mata) dan kolikulus bawah (refleks telinga), serta substansia nigra yang penting untuk gerakan.'}
+]
+},
+{
+id:'neuro3',title:'Neuroanatomi III - SST',icon:'network',
+topics:[
+{title:'Sistem Saraf Tepi (PNS)',medical:'Peripheral Nervous System (PNS) terdiri dari 12 pasang saraf kranial dan 31 pasang saraf spinal. Saraf mengandung serabut aferen (ke SSP) dan eferen (dari SSP). PNS terbagi menjadi: sistem saraf somatik (somatis: motorik volunter ke otot rangka) dan sistem saraf otonom (motorik involunter ke otot polos, otot jantung, dan kelenjar).',simple:'Sistem saraf tepi meliputi semua saraf di luar otak dan sumsum tulang belakang: 12 pasang saraf kepala dan 31 pasang saraf tulang belakang. Terbagi ke sistem somatis (gerakan sadar) dan otonom (gerakan otomatis).'},
+{title:'12 Saraf Kranial (CN I-VI)',medical:'CN I Olfaktorius: sensorik, bau. CN II Optikus: sensorik, penglihatan. CN III Oculomotorius: motorik, gerak mata (kec. SO & LR), akomodasi, pupil. CN IV Trochlearis: motorik, m. oblique superior (SO4). CN V Trigeminalis: mixed, 3 divisi (V1 ophthalmik, V2 maxilar, V3 mandibular), sensorik wajah + motorik mengunyah. CN VI Abducens: motorik, m. lateral rectus (LR6). Mnemonic: SO4, LR6, AO3.',simple:'Saraf kepala 1-6: I penciuman, II penglihatan, III gerak mata dan pupil, IV oblique superior, V rasa wajah dan mengunyah, VI lateral rectus. Ingat: SO4-LR6-AO3.'},
+{title:'12 Saraf Kranial (CN VII-XII)',medical:'CN VII Fasialis: mixed, ekspresi wajah, rasa anterior 2/3 lidah, kelenjar air mata/ludah. Branches: temporal, zygomatic, buccal, marginal mandibular, cervical (mnemonic: To Zanzibar By Motor Car). CN VIII Vestibulocochlearis: sensorik, pendengaran & keseimbangan. CN IX Glossopharyngeus: mixed, rasa posterior 1/3 lidah, faring, parotid gland. CN X Vagus: mixed, faring, laring, organ thoraks & abdomen. CN XI Aksesorius: motorik, sternocleidomastoid & trapezius. CN XII Hipoglosus: motorik, otot lidah.',simple:'Saraf kepala 7-12: VII ekspresi wajah, VIII pendengaran, IX rasa lidah belakang, X organ dalam (paling luas), XI gerak leher, XII gerak lidah.'},
+{title:'Saraf Spinal & Plexus',medical:'31 pasang saraf spinal: 8 servikal (C1-C8), 12 toraks (T1-T12), 5 lumbal (L1-L5), 5 sakral (S1-S5), 1 koksigus. Tiap saraf spinal mixed (sensorik + motorik). Plexus: Cervicalis (C1-C4) - innervasi leher; Brachialis (C5-T1) - upper limb; Lumbalis (L1-L4) - abdominal wall & anterior hip/thigh; Sakralis (L4-S4) - pelvis & lower limb.',simple:'Saraf tulang belakang keluar dari sumsum tulang belakang: 8 dari leher, 12 dari dada, 5 dari pinggang, 5 dari tulang ekor. Saraf-saraf ini bergabung membentuk jaringan saraf (plexus) di area leher, lengan, pinggang, dan kaki.'},
+{title:'Sistem Saraf Otonom',medical:'ANS mengontrol fungsi involunter: Simpatis (thorakolumbar, "fight or flight") dan Parasimpatis (kraniosakral, "rest and digest"). Ganglia simpatis dekat spinal cord (sympathetic chain), ganglia parasimpatis dekat organ target. Hipotalamus adalah pusat regulasi utama ANS. Neurotransmitter: simpatis postganglion menggunakan norepinefrin (kec. kelenjar keringat menggunakan ACh), parasimpatis menggunakan ACh.',simple:'Sistem saraf otonom mengontrol organ tubuh secara otomatis. Simpatis aktif saat stres (detak jantung naik, "lari"), parasimpatis aktif saat istirahat (pencernaan aktif, "istirahat").'},
+{title:'Simpatis vs Parasimpatis',medical:'Simpatis: preganglion pendek, postganglion panjang, ganglia berdekatan spinal cord, neurotransmitter norepinefrin (adrenergik), efektor: dilatasi pupil, peningkatan HR dan TD, hambat pencernaan, vasokonstriksi kulit, keringat. Parasimpatis: preganglion panjang, postganglion pendek, ganglia dekat organ, neurotransmitter ACh (kolinergik), efektor: konstriksi pupil, penurunan HR dan TD, stimulasi pencernaan, mikturisi, defekasi.',simple:'Simpatis: detak jantung naik, tekanan darah naik, pupil membesar, berkeringat, pencernaan melambat. Parasimpatis: detak jantung turun, tekanan darah turun, pupil mengecil, produksi air liur meningkat, pencernaan aktif.'},
+{title:'Synapses & Neurotransmitter',medical:'Synapsis adalah junction antara neuron. Tipe: electrical synapse (gap junction) dan chemical synapse (neurotransmitter). Proses: action potential → Ca2+ masuk → vesikel synaptic melepas neurotransmitter → bind ke receptor postsinaptik → excitatory (depolarisasi) atau inhibitory (hiperpolarisasi). Neurotransmitter utama: ACh (somatic motor, parasimpatis), Norepinefrin (simpatis postganglion), Dopamine, GABA, Glutamate.',simple:'Sinapsis adalah tempat komunikasi antar sel saraf. Sinyal listrik diubah menjadi kimia (neurotransmitter) lalu kembali ke listrik. Neurotransmitter utama: asetilkolin, norepinefrin, dopamin, GABA.'},
+{title:'Motor Unit & Neuromuscular Junction',medical:'Motor unit: 1 alpha motor neuron + semua muscle fibers yang diinervasinya (10-500 fibers). Upper motor neuron (UMN): dari kortex ke brainstem/spinal cord. Lower motor neuron (LMN): dari spinal cord/nerve ke otot. Neuromuscular junction: akson motor neuron → motor end plate → reseptor nicotinic ACh → depolarisasi → kontraksi otot. Lesi UMN: spastisitas, hyperreflexia. Lesi LMN: flasiditas, atrofi, fasciculation.',simple:'Unit motorik adalah 1 neuron motorik dan semua serabut otot yang dikendalikannya. Neuron motorik atas (UMN) dari otak, neuron motorik bawah (LMN) dari sumsum tulang belakang ke otot. Kerusakan UMN menyebabkan kekakuan, kerusakan LMN menyebabkan lemas.'}
+]
+},
+{
+id:'eye',title:'Anatomi & Histologi Mata',icon:'eye',
+topics:[
+{title:'Tunica Fibrosa (Lapisan Luar)',medical:'Tunica fibrosa terdiri dari: Sklera (5/6 posterior, jaringan ikat padat, opaque/putih, menerima insertio otot ekstrinsik mata) dan Kornea (1/6 anterior, transparan, avaskular, highly innervated). Kornea memiliki 5 lapis: Epitel (stratified squamous nonkeratinized, regenerasi cepat, microvilli), Bowman layer (acellular, homogeneous), Stroma (90% ketebalan, collagen type I teratur, chondroitin sulfate & keratan sulfate), Descemet membrane (5-10 um, basal lamina), Endothelium (simple squamous, pompa fluida menjaga transparency via deturgescence).',simple:'Lapisan terluar mata: bagian putih (sklera) melindungi mata, bagian depan transparan (kornea) membiaskan cahaya. Kornea transparan karena susunan seratnya rapi, tidak ada pembuluh darah, dan pompa sel endotel menjaga kekeringannya.'},
+{title:'Tunica Vasculosa / Uvea',medical:'Tunica vasculosa (uvea) terdiri dari 3 bagian: Koroid (highly vascular, pigmented, choriocapillaris nutrient ke retina, Bruch membrane), Corpus siliaris (ciliary muscle + ciliary processes, produksi aqueous humor, akomodasi), dan Iris (melanocytes, regulates pupil size). Ciliary muscle berkontraksi → zonula relax → lensa lebih bulat → akomodasi dekat. Innervasi parasimpatis via CN III. Iris: dilator pupillae (radial, simpatis → midriasis) dan sfingter pupillae (sirkular, parasimpatis → miosis).',simple:'Lapisan tengah mata: koroid (pembuluh darah dan pigmen), badan siliar (membuat cairan dan mengatur lensa), dan iris (berwarna, mengatur besar kecil pupil). Warna mata ditentukan oleh jumlah pigmen melanin.'},
+{title:'Retina & 10 Lapisan',medical:'Retina memiliki 10 lapis: 1) Pigment epithelium (RPE), 2) Rod & cone layer, 3) Outer limiting layer, 4) Outer nuclear layer, 5) Outer plexiform layer, 6) Inner nuclear layer, 7) Inner plexiform layer, 8) Ganglion cell layer, 9) Nerve fiber layer, 10) Inner limiting layer. Fovea centralis: hanya cones, avaskular, visual acuity tertinggi. Macula lutea: 3mm, central vision. Optic disc: blind spot, tidak ada photoreceptors.',simple:'Retina adalah lapisan sensitif cahaya di belakang mata dengan 10 lapisan. Fovea (tengah) hanya berisi sel kerucut untuk penglihatan tajam. Optic disc adalah titik buta tempat saraf optik keluar.'},
+{title:'Fotoreseptor: Rod & Cone',medical:'Rod cells: sensitif cahaya redup (scotopic vision), rhodopsin (vitamin A + opsin), ~120 juta, tersebar perifer retina, gangguan = rabun ayam (nyctalopia). Cone cells: sensitif cahaya terang (photopic vision), tajam warna, 3 tipe (S-biru, M-hijau, L-merah/iodopsin), ~6 juta, terkonsentrasi di fovea, gangguan = buta warna. Fototransduksi: cahaya → isomerisasi 11-cis retinal → aktivasi rhodopsin → transducin → PDE → cGMP turun → channel Na+ menutup → hiperpolarisasi.',simple:'Sel batang bekerja di tempat gelap (~120 juta), mengandung rhodopsin. Sel kerucut untuk warna (~6 juta), ada 3 tipe: biru, hijau, merah. Saat gelap cGMP tinggi (channel terbuka). Saat terang cGMP rendah (channel tertutup, hiperpolarisasi).'},
+{title:'RPE (Retinal Pigment Epithelium)',medical:'RPE adalah lapisan pigmen tunggal antara retina dan koroid. Fungsi: 1) Vitamin A metabolism (konversi dan storage retinal untuk visual pigment), 2) Phagocytosis (memfagosit shed outer segments photoreceptors setiap hari), 3) Light absorption (melanin mengurangi light scattering), 4) Blood-retina barrier (outer barrier, mengontrol exchange antara koroid dan retina). RPE resting potential: -50 to -70 mV. Kerusakan RPE → degenerasi retina (misal: AMD).',simple:'RPE adalah lapisan pigmen pelindung retina. Fungsinya: mengubah vitamin A, membersihkan sisa fotoreseptor, menyerap cahaya berlebih, dan membatasi darah ke retina. Kerusakan RPE dapat menyebabkan kebutaan (AMD).'},
+{title:'Kornea - 5 Lapisan Detail',medical:'1) Corneal Epithelium: stratified squamous nonkeratinized, 5-7 lapis, regenerasi cepat (stem cells di limbus), microvilli trap moisture. 2) Bowman Layer: acellular, 8-14 um, collagen type I & V, tidak beregenerasi (jika rusak → scar). 3) Corneal Stroma: 90% ketebalan, 60 lapis collagen lamellae (type I) teratur, keratan sulfate, proteoglycans, fibroblasts. 4) Descemet Membrane: 5-10 um, basal lamina, tebal seiring usia (terbentuk sejak lahir), type IV collagen + laminin. 5) Corneal Endothelium: single layer hexagonal cells, Na+/K+-ATPase pump menjaga deturgescence, tidak beregenerasi (jumlah menurun seiring usia).',simple:'Kornea memiliki 5 lapis: epitel (mudah sembuh), Bowman (pelindung, tidak tumbuh lagi), stroma (tertebal, berisi serat), Descemet (lapisan dasar), dan endotel (pompa menjaga kejernihan, jumlah terbatas).'},
+{title:'Lensa & Akomodasi',medical:'Lensa bikonveks, transparan, avaskular, terdiri dari lens capsule (basal lamina), lens epithelium (simple cuboidal, anterior only), dan lens fibers (filled with crystallins). Zonular fibers (suspensory ligament) dari ciliary processes menahan lensa. Akomodasi dekat: ciliary muscle kontraksi (parasimpatis/CN III) → zonula relax → lensa lebih bulat → refraksi kuat. Akomodasi jauh: ciliary muscle relaksasi → zonula tegang → lensa mendatar. Daya akomodasi menurun seiring usia (presbiopi). Cataract: opasitas lensa akibat denaturasi protein crystallin.',simple:'Lensa memfokuskan cahaya ke retina. Saat melihat dekat, otot siliaris berkontraksi, lensa membulat. Saat melihat jauh, lensa mendatar. Katarak adalah kekeruhan lensa yang sering terjadi pada lansia.'},
+{title:'Cairan Mata & Drainase',medical:'Aqueous humor: diproduksi oleh ciliary processes (non-pigmented epithelium), mengalir posterior chamber → pupil → anterior chamber → trabecular meshwork → canal of Schlemm → episcleral veins. Fungsi: nutritive, maintaining IOP, refractive. Vitreous body: gel transparan, 99% air, collagen type II + hyaluronic acid, fills vitreous chamber. Tidak beregenerasi (vitreous detachment bisa terjadi). Glaucoma: peningkatan IOP akibat impaired outflow aqueous humor di trabecular meshwork.',simple:'Cairan depan mata (aqueous) dibuat oleh badan siliar, mengalir keluar melalui saluran Schlemm. Gel belakang (vitreous) menjaga bentuk bola mata. Glaukoma adalah peningkatan tekanan mata akibat saluran drainase tersumbat.'},
+{title:'Aksesori Mata (Eyelid, Konjungtiva, Lakrimal)',medical:'Eyelid: skin luar, konjungtiva dalam, tarsal plate (dense connective tissue), meibomian glands (sebaceous, di tarsus), glands of Zeis (sebaceous), glands of Moll (modified apocrine sweat), orbicularis oculi muscle. Konjungtiva: thin transparent mucous membrane, 3 region (palpebral, forniceal, bulbar), goblet cells produce mucus. Lacrimal apparatus: lacrimal gland (compound tubuloalveolar, produces tears with lysozyme) → canaliculi → lacrimal sac → nasolacrimal duct → nasal cavity (inferior meatus).',simple:'Kelopak mata melindungi mata dari benda asing. Konjungtiva adalah selaput lendir transparan. Kelenjar air mata memproduksi air mata yang mengandung lysozyme (antibakteri) untuk melindungi dan melumasi mata.'}
+]
+},
+{
+id:'ear',title:'Histologi Telinga',icon:'ear',
+topics:[
+{title:'Telinga Luar (Auris Externa)',medical:'Telinga luar: auricle/pinna (elastic cartilage + thin skin), external auditory meatus (1/3 outer = bone, 2/3 inner = cartilage), skin with hair follicles + sebaceous glands + ceruminous glands (modified apocrine → earwax/cerumen). Membran timpani: 3 lapis - outer cuticular layer (thin skin, ~10 cell layers), intermediate fibrous layer (collagen type I radial & circular), inner mucosal layer (simple cuboidal to squamous, continuous with middle ear mucosa). Landmarks otoscopic: manubrium malleus, umbo, cone of light.',simple:'Telinga luar: daun telinga dari tulang rawan elastis, liang telinga berambut dan berkelenjar minyak/serumen. Gendang telinga (membran timpani) bergetar saat menerima bunyi, terdiri dari 3 lapis.'},
+{title:'Telinga Tengah (Auris Media)',medical:'Telinga tengah: tympanic cavity lined by simple cuboidal epithelium (berubah ke pseudostratified ciliated columnar near auditory tube). Mengandung 3 ossicles: malleus (hammer), incus (anvil), stapes (stirrup). 2 otot: tensor tympani (CN V, inserts on malleus, increases tension on TM) dan stapedius (CN VII, inserts on stapes, dampens vibration). Attenuation reflex: kontraksi kedua otot membuat ossicular chain lebih rigid, melindungi inner ear dari suara sangat keras. Auditory tube (Eustachian): connects middle ear to nasopharynx, lined by pseudostratified ciliated columnar with goblet cells, opens during swallowing/yawning for pressure equalization.',simple:'Telinga tengah berisi 3 tulang kecil (martil, landasan, sanggurdi) yang meneruskan getaran bunyi ke telinga dalam. Ada 2 otot kecil yang melindungi telinga dari bunyi keras. Tuba Eustachius menyamakan tekanan udara.'},
+{title:'Telinga Dalam - Overview',medical:'Telinga dalam terletak di temporal bone, terdiri dari bony labyrinth (filled with perilymph) dan membranous labyrinth (filled with endolymph). 3 bagian: semicircular canals (keseimbangan/rotasi), vestibule (utricle & saccule - keseimbangan linear), dan cochlea (pendengaran). Cochlea berputar 2.5-2.75x mengelilingi modiolus, memiliki 3 skala: scala vestibuli & scala tympani (perilymph) dan scala media/cochlear duct (endolymph). Vestibular membrane (Reissner) memisahkan scala vestibuli dari cochlear duct.',simple:'Telinga dalam di dalam tulang tengkorak berisi cairan. Ada 3 bagian: saluran setengah lingkaran (keseimbangan rotasi), vestibula (keseimbangan lurus), dan koklea (pendengaran).'},
+{title:'Koklea & Organ of Corti',medical:'Cochlear duct mengandung organ of Corti yang terletak di basilar membrane. Komponen: inner hair cells (~3500, sensorik utama, 1 row) dan outer hair cells (~12000, amplifier mekanik, 3 rows). Tectorial membrane menutupi stereosilia hair cells. Inner tunnel of Corti memisahkan IHC dan OHC. Stria vascularis (lateral cochlear duct): pseudostratified epithelium yang mensekresi endolymph. Basilar membrane: tonotopic organization - basis (sempit, kaku) = high frequency; apex (lebar, fleksibel) = low frequency. Hair cells memiliki stereocilia tetapi tidak memiliki kinocilium (beda dengan vestibular).',simple:'Organ of Corti di dalam koklea berisi sel rambut dalam (sensorik) dan sel rambut luar (penguat). Membran basilaris berbeda lebarnya: ujung sempit untuk bunyi tinggi, pangkal lebar untuk bunyi rendah. Membran tektorial menutupi rambut sensorik.'},
+{title:'Mekanisme Pendengaran',medical:'Gelombang bunyi → auricle → meatus → timpani bergetar → malleus/incus/stapes (amplifikasi ~22x) → oval window → perilymph bergerak → basilar membrane vibrasi (tonotopik) → stereosilia hair cells shear terhadap tectorial membrane → depolarisasi → neurotransmitter → cochlear nerve (CN VIII) → cochlear nucleus → superior olivary nucleus → inferior colliculus → medial geniculate body → auditory cortex (temporal lobe). Oscillations dissipate at round window (secondary tympanic membrane).',simple:'Bunyi masuk → gendang telinga bergetar → 3 tulang kecil meneruskan getaran → jendela oval bergetar → cairan koklea bergerak → sel rambut bergerak melawan membran tektorial → sinyal listrik → saraf pendengaran ke otak.'},
+{title:'Sistem Vestibular (Keseimbangan)',medical:'Sistem vestibular mendeteksi posisi dan pergerakan kepala. Semicircular ducts (3, saling tegak lurus): mendeteksi angular acceleration. Ampulla mengandung crista ampullaris dengan cupula (gelatinous, tanpa otoliths). Utricle & saccule: mendeteksi linear acceleration. Macula utriculi (horizontal) mendeteksi percepatan horizontal. Macula sacculi (vertical) mendeteksi percepatan vertikal. Hair cells memiliki stereocilia + 1 kinocilium. Otolithic membrane mengandung otoconia (CaCO3 crystals). Vestibular hair cells + kinocilium; Cochlear hair cells tanpa kinocilium.',simple:'Sistem keseimbangan: 3 saluran setengah lingkaran mendeteksi gerakan memutar. Utrikel dan sakulus mendeteksi gerakan lurus. Sel rambut vestibular memiliki kinosilium, sel rambut koklear tidak.'},
+{title:'Perbedaan Vestibular vs Cochlear',medical:'Vestibular: fungsi keseimbangan, stimulus gerakan linear & angular, struktur macula & crista ampullaris, memiliki kinocilium, lokasi utricle/saccule/semicircular ducts, neuroepithelial hair cells dengan otolithic membrane. Cochlear: fungsi pendengaran, stimulus getaran bunyi, struktur organ of Corti, tanpa kinocilium, lokasi cochlear duct, hair cells dengan tectorial membrane. Perilymph (scala vestibuli & tympani): mirip CSF, low K+. Endolymph (cochlear duct, membranous labyrinth): high K+, secreted by stria vascularis.',simple:'Vestibuler: untuk keseimbangan, mendeteksi gerakan, memiliki kinosilium. Koklear: untuk pendengaran, mendeteksi bunyi, tanpa kinosilium. Kedua sistem menggunakan cairan berbeda: perilymfa dan endolimfa.'}
+]
+},
+{
+id:'physio',title:'Fisiologi Indra',icon:'activity',
+topics:[
+{title:'Fisiologi Penglihatan',medical:'Fototransduksi: cahaya → isomerisasi 11-cis retinal ke all-trans → aktivasi rhodopsin → transducin (G-protein) → fosfodiesterase (PDE) → cGMP turun → cGMP-gated Na+ channels menutup → hiperpolarisasi reseptor → release glutamat ↓ → bipolar cell aktif → ganglion cell → optic nerve. Pada gelap: cGMP tinggi → channel Na+ terbuka → depolarisasi (-30mV) → glutamat release → hiperpolarisasi bipolar. Photoreceptor unik: hiperpolarisasi saat terkena cahaya (bukan depolarisasi).',simple:'Cahaya masuk ke mata → memicu reaksi kimia di sel batang/kerucut → cGMP turun → channel natrium tertutup → hiperpolarisasi → sinyal ke bipolar cell → ganglion cell → saraf optikus. Unik: sel fotoreseptor hiperpolarisasi saat terkena cahaya.'},
+{title:'Daya Akomodasi Mata',medical:'Akomodasi adalah kemampuan menyesuaikan kekuatan lensa sehingga objek dekat dan jauh difokuskan di retina. Kekuatan lensa diatur oleh ciliary muscle (bagian dari corpus ciliaris). Mata normal (emmetropia): untuk jauh → ciliary muscle relaksasi → zonular fibers tegang → lensa mendatar. Untuk dekat → ciliary muscle kontraksi (parasimpatis/CN III) → zonula relax → lensa lebih bulat → refraksi kuat. Serat saraf simpatis: relaksasi otot siliaris → penglihatan jauh. Presbiopia: penurunan daya akomodasi seiring usia akibat kekakuan lensa.',simple:'Akomodasi adalah kemampuan mata memfokuskan objek dekat dan jauh. Otot siliaris berkontraksi untuk melihat dekat (lensa membulat), rileks untuk melihat jauh (lensa mendatar). Lansia sering kesulitan melihat dekat (presbiopi).'},
+{title:'Fisiologi Pendengaran',medical:'Mekanisme: bunyi (20-20,000 Hz) → auricle → meatus → timpani → ossicles (malleus→incus→stapes, amplifikasi 22x) → oval window → perilymph scala vestibuli bergerak → Reissner membrane → endolymph bergerak → basilar membrane vibrasi (tonotopik: high freq di basis, low freq di apex) → hair cells stereocilia shear terhadap tectorial membrane → mechanoelectrical transduction → K+ influx → depolarisasi → Ca2+ influx → neurotransmitter release → afferent fibers → cochlear nerve (CN VIII) → auditory pathway ke temporal cortex.',simple:'Bunyi diteruskan dari telinga luar ke tengah ke dalam. Di koklea, frekuensi berbeda menggetarkan bagian berbeda dari membran basilaris. Sel rambut mengubah getaran mekanik menjadi sinyal listrik yang ke otak bagian temporal.'},
+{title:'Fisiologi Penciuman (Olfaksi)',medical:'Olfaksi: odorant molecules → bind ke reseptor G-protein ( Golf ) di cilia neuron olfaktori → adenilat siklase → cAMP → CNG (Cyclic Nucleotide-Gated) Na+ & Ca2+ channels terbuka → depolarisasi → action potential → olfactory bulb (mitral cells) → olfactory tract → piriform cortex, amygdala, entorhinal cortex. Sistem olfaktori unik: tidak melalui thalamus (direct ke korteks). N. olfaktorius (CN I): serabut sensorik, meneruskan sensasi bau. Olfactory receptor neurons beregenerasi setiap 30-60 hari.',simple:'Molekul bau terikat ke reseptor di hidung → reaksi kimia → sinyal listrik → bulbus olfaktorius → korteks olfaktorius. Sistem penciuman unik karena tidak melalui thalamus. Sel pencium berganti setiap 1-2 bulan.'},
+{title:'Fisiologi Pengecapan (Gustasi)',medical:'5 rasa dasar: manis, asin, asam, pahit, umami. Taste buds mengandung taste receptor cells dengan microvili (taste pore). Transduksi: manis/umami → T1R2+T1R3 receptor → G-protein → PLCβ2 → IP3 → Ca2+ release → TRPM5 channel; asam → H+ → PKD2L1 channel; pahit → T2R receptors → G-protein → PLCβ2; asin → ENaC channel (Na+). Afferent: chorda tympani (CN VII, anterior 2/3 lidah), glossopharyngeal (CN IX, posterior 1/3), vagus (CN X, epiglottis) → nucleus solitarius → VPM thalamus → insular cortex. Taste buds beregenerasi setiap 10 hari.',simple:'Ada 5 rasa: manis, asin, asam, pahit, umami. Kuncup pengecap mengubah zat kimia menjadi sinyal listrik. Saraf fasialis (CN VII) untuk bagian depan lidah, glosofaringeus (CN IX) untuk bagian belakang. Kuncup pengecap berganti setiap 10 hari.'},
+{title:'Macam-macam Reseptor Pengecapan',medical:'Manis: gula, glikol, alcohol, aldehyde, keton, asam amino, protein → T1R2+T1R3 → G-protein → cAMP pathway. Asin: NaCl, konsentrasi Na+ tinggi → ENaC channel. Asam: H+ (citrus, cuka) → PKD2L1/PKD1L3 channel, juga menghambat K+ channels. Pahit: alkaloid, toxin → T2R (~25 tipe) → G-protein → IP3/Ca2+ pathway, fungsi protektif terhadap toxin. Umami: glutamat, aspartat → T1R1+T1R3 → mGluR4. Kemampuan reseptor: 2 Na+, 2 K+, 1 Cl-, 1 adenosine, 1 inosin, 1 manis, 1 pahit, 1 glutamate, 1 H+ receptor.',simple:'Manis: gula. Asin: garam (NaCl). Asam: lemon/cuka (H+). Pahit: alkaloid/toxin. Umami: MSG/glutamat. Rasa pahit berfungsi melindungi dari racun.'}
+]
+}
+];
+
+// Abbreviations data
+const abbreviations=[
+{short:'CNS',full:'Central Nervous System',desc:'Sistem Saraf Pusat'},{short:'PNS',full:'Peripheral Nervous System',desc:'Sistem Saraf Tepi'},
+{short:'CSF',full:'Cerebrospinal Fluid',desc:'Cairan Serebrospinal'},{short:'CNS',full:'Central Nervous System',desc:'Sistem Saraf Pusat'},
+{short:'SSP',full:'Sistem Saraf Pusat',desc:'Otak & Sumsum Tulang Belakang'},{short:'SST',full:'Sistem Saraf Tepi',desc:'Saraf Kranial & Spinal'},
+{short:'ANS',full:'Autonomic Nervous System',desc:'Sistem Saraf Otonom'},{short:'UMN',full:'Upper Motor Neuron',desc:'Neuron Motorik Atas'},
+{short:'LMN',full:'Lower Motor Neuron',desc:'Neuron Motorik Bawah'},{short:'TM',full:'Tympanic Membrane',desc:'Membran Timpani (Gendang Telinga)'},
+{short:'RPE',full:'Retinal Pigment Epithelium',desc:'Epitel Pigmen Retina'},{short:'IHC',full:'Inner Hair Cell',desc:'Sel Rambut Dalam'},
+{short:'OHC',full:'Outer Hair Cell',desc:'Sel Rambut Luar'},{short:'AC',full:'Anterior Chamber',desc:'Kamar Depan Mata'},
+{short:'PC',full:'Posterior Chamber',desc:'Kamar Belakang Mata'},{short:'IOP',full:'Intraocular Pressure',desc:'Tekanan Intraokular'},
+{short:'ACh',full:'Acetylcholine',desc:'Neurotransmitter Asetilkolin'},{short:'NE',full:'Norepinephrine',desc:'Neurotransmitter Norepinefrin'},
+{short:'GABA',full:'Gamma-Aminobutyric Acid',desc:'Neurotransmitter inhibitor'},{short:'cGMP',full:'cyclic Guanosine Monophosphate',desc:'Molekul sinyal kedua fototransduksi'},
+{short:'CN',full:'Cranial Nerve',desc:'Saraf Kranial (CN I-XII)'},{short:'ARAS',full:'Ascending Reticular Activating System',desc:'Sistem Aktivasi Retikuler'},
+{short:'PDE',full:'Phosphodiesterase',desc:'Enzim pemecah cGMP'},{short:'AMD',full:'Age-related Macular Degeneration',desc:'Degenerasi Makula'},
+{short:'ENaC',full:'Epithelial Sodium Channel',desc:'Channel sodium epitelial'},{short:'TRPM5',full:'Transient Receptor Potential M5',desc:'Channel kalsium taste'},
+];
+
+// Quiz data
+const quizzes={
+neuro1:[
+{q:'Bagian manakah dari neuron yang menerima sinyal masuk?',options:['Akson','Dendrit','Badan sel','Nukleus'],correct:1,explanation:'Dendrit adalah bagian neuron yang menerima sinyal masuk dari neuron lain.'},
+{q:'Berapa jumlah pasang saraf spinal manusia?',options:['12 pasang','21 pasang','31 pasang','43 pasang'],correct:2,explanation:'Terdapat 31 pasang saraf spinal: 8 servikal, 12 toraks, 5 lumbal, 5 sakral, 1 koksigus.'},
+{q:'Apa fungsi utama Cerebellum?',options:['Regulasi suhu','Kontrol motorik halus & keseimbangan','Produksi hormon','Penglihatan'],correct:1,explanation:'Cerebellum mengontrol koordinasi motorik halus, keseimbangan, dan postur tubuh.'},
+{q:'Neuroglia mana yang membentuk myelin sheath di CNS?',options:['Astrosit','Mikroglia','Oligodendrosit','Ependim'],correct:2,explanation:'Oligodendrosit membentuk mielin di CNS, sedangkan Schwann cells di PNS.'},
+{q:'Traktus mana yang membawa informasi nyeri dan suhu?',options:['Fasciculus gracilis','Lateral spinothalamic','Anterior spinothalamic','Corticospinal'],correct:1,explanation:'Lateral spinothalamic tract membawa informasi nyeri dan suhu ke otak.'}
+],
+neuro2:[
+{q:'Berapa lapis meninges yang membungkus otak?',options:['2 lapis','3 lapis','4 lapis','5 lapis'],correct:1,explanation:'Ada 3 lapis meninges: Dura mater, Arachnoid mater, dan Pia mater.'},
+{q:'Lingkaran apakah yang terbentuk dari anastomosis arteri di dasar otak?',options:['Lingkaran Meyer','Lingkaran Willis','Lingkaran Wernicke','Lingkaran Broca'],correct:1,explanation:'Circulus arteriosus Willis terbentuk dari anastomosis antara arteri karotis interna dan vertebralis.'},
+{q:'Dimanakah CSF diproduksi?',options:['Ventricles','Choroid plexus','Arachnoid granulations','Dural sinuses'],correct:1,explanation:'CSF diproduksi oleh choroid plexus yang terdapat di dinding ventrikel.'},
+{q:'Lobus otak mana yang berfungsi untuk penglihatan?',options:['Frontalis','Parietalis','Temporalis','Oksipitalis'],correct:3,explanation:'Lobus oksipitalis di bagian belakang otak berfungsi untuk memproses informasi visual.'}
+],
+neuro3:[
+{q:'Berapa jumlah saraf kranial?',options:['10 pasang','12 pasang','14 pasang','16 pasang'],correct:1,explanation:'Terdapat 12 pasang saraf kranial (CN I hingga CN XII).'},
+{q:'Saraf kranial mana yang terdistribusi paling luas?',options:['CN III','CN VII','CN X','CN XII'],correct:2,explanation:'N. Vagus (CN X) adalah saraf kranial terpanjang dan terdistribusi paling luas, mensuplai organ dada dan abdomen.'},
+{q:'Sistem saraf otonom mana yang disebut "fight or flight"?',options:['Simpatis','Parasimpatis','Enterik','Somatik'],correct:0,explanation:'Sistem saraf simpatis dikenal sebagai "fight or flight" (lari atau berkelahi).'},
+{q:'Neurotransmitter apakah yang digunakan oleh parasimpatis postganglion?',options:['Norepinefrin','Dopamin','Asetilkolin','GABA'],correct:2,explanation:'Sistem parasimpatis menggunakan asetilkolin (ACh) sebagai neurotransmitter di synapsis postganglion.'},
+{q:'Mnemonic untuk otot ekstraokular?',options:['LR6 SO4 AO3','AO3 LR6 SO4','SO4 LR6 AO3','LR6 AO3 SO4'],correct:2,explanation:'SO4 = Superior oblique (CN IV), LR6 = Lateral rectus (CN VI), AO3 = All others (CN III).'}
+],
+eye:[
+{q:'Berapa lapis kornea?',options:['3 lapis','4 lapis','5 lapis','6 lapis'],correct:2,explanation:'Kornea memiliki 5 lapis: Epitel, Bowman, Stroma, Descemet, dan Endotel.'},
+{q:'Sel fotoreseptor mana yang berfungsi di cahaya redup?',options:['Cone cells','Rod cells','Bipolar cells','Ganglion cells'],correct:1,explanation:'Rod cells bekerja di tempat gelap dan mengandung rhodopsin. Jumlahnya ~120 juta.'},
+{q:'Bagian retina manakah yang memiliki visual acuity tertinggi?',options:['Optic disc','Macula lutea','Fovea centralis','Perifer retina'],correct:2,explanation:'Fovea centralis adalah area kecil di tengah macula yang hanya berisi cones dan avaskular, memberikan visual acuity tertinggi.'},
+{q:'Apa fungsi RPE (Retinal Pigment Epithelium)?',options:['Produksi aqueous humor','Fototransduksi','Phagocytosis shed outer segments','Regulasi pupil'],correct:2,explanation:'RPE berfungsi memfagositosis bagian luar fotoreseptor yang shed, absorbsi cahaya, dan metabolismo vitamin A.'},
+{q:'Otot apa yang berkontraksi untuk akomodasi dekat?',options:['Dilator pupillae','Sphincter pupillae','Ciliary muscle','Rectus superior'],correct:2,explanation:'Ciliary muscle berkontraksi (parasimpatis/CN III) sehingga lensa menjadi lebih bulat untuk melihat dekat.'}
+],
+ear:[
+{q:'Berapa jumlah ossicles di telinga tengah?',options:['2','3','4','5'],correct:1,explanation:'Terdapat 3 ossicles: Malleus (martil), Incus (landasan), dan Stapes (sanggurdi).'},
+{q:'Otot apa yang merupakan otot rangka terkecil di tubuh?',options:['Tensor tympani','Stapedius','Striated muscle','Ciliary muscle'],correct:1,explanation:'Stapedius muscle adalah otot rangka terkecil di tubuh manusia, berfungsi melindungi inner ear dari suara keras.'},
+{q:'Di manakah organ of Corti terletak?',options:['Scala vestibuli','Scala tympani','Cochlear duct (scala media)','Semicircular canal'],correct:2,explanation:'Organ of Corti terletak di cochlear duct (scala media) yang berisi endolymph, di atas basilar membrane.'},
+{q:'Struktur apakah yang mendeteksi angular acceleration?',options:['Macula utriculi','Macula sacculi','Crista ampullaris','Organ of Corti'],correct:2,explanation:'Crista ampullaris di dalam ampulla semicircular ducts mendeteksi percepatan sudut (angular acceleration).'}
+],
+physio:[
+{q:'Apa yang terjadi pada photoreceptor saat terkena cahaya?',options:['Depolarisasi','Hiperpolarisasi','Tetap sama','Aksi potensial'],correct:1,explanation:'Photoreceptor mengalami hiperpolarisasi saat terkena cahaya karena channel Na+ menutup (cGMP turun). Unik: hiperpolarisasi, bukan depolarisasi.'},
+{q:'Neurotransmitter apakah yang dilepas oleh photoreceptor?',options:['Asetilkolin','Glutamat','GABA','Dopamin'],correct:1,explanation:'Photoreceptor melepas glutamat di synapsis dengan bipolar cells.'},
+{q:'Berapa frekuensi bunyi yang dapat didengar manusia?',options:['1-10,000 Hz','20-20,000 Hz','100-50,000 Hz','500-100,000 Hz'],correct:1,explanation:'Manusia dapat mendengar frekuensi bunyi antara 20-20,000 Hz.'},
+{q:'Berapa rasa dasar yang dikenal?',options:['3','4','5','6'],correct:2,explanation:'Ada 5 rasa dasar: manis, asin, asam, pahit, dan umami.'},
+{q:'Saraf kranial mana yang meneruskan rasa dari anterior 2/3 lidah?',options:['CN IX','CN X','CN VII','CN V'],correct:2,explanation:'Chorda tympani dari CN VII meneruskan rasa dari anterior 2/3 lidah.'}
+]
+};
+
+// ======================== STATE ========================
+let activeMod=0;
+let activeTopic=0;
+let langMode='medical';
+let bookmarks=JSON.parse(localStorage.getItem('mediced_bookmarks')||'[]');
+let notes=JSON.parse(localStorage.getItem('mediced_notes')||'{}');
+
+// ======================== THEME ========================
+function initTheme(){
+const t=localStorage.getItem('mediced_theme')||'dark';
+document.documentElement.setAttribute('data-theme',t);
+document.getElementById('themeIcon').innerHTML=t==='light'?'&#9790;':'&#9728;';
+}
+function toggleTheme(){
+const cur=document.documentElement.getAttribute('data-theme')||'dark';
+const next=cur==='dark'?'light':'dark';
+document.documentElement.setAttribute('data-theme',next);
+localStorage.setItem('mediced_theme',next);
+document.getElementById('themeIcon').innerHTML=next==='light'?'&#9790;':'&#9728;';
+}
+
+// ======================== RENDER ========================
+function renderSidebar(){
+let h='';
+for(let m=0;m<modules.length;m++){
+let mod=modules[m];
+let isA=m===activeMod;
+h+='<div class="mod-group">';
+h+='<button class="mod-btn '+(isA?'active':'')+'" onclick="selectMod('+m+')">'+iconSvg(mod.icon)+'<span style="flex:1">'+mod.title+'</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>';
+h+='<div class="sub-list '+(isA?'open':'')+'">';
+for(let t=0;t<mod.topics.length;t++){
+let isT=isA&&t===activeTopic;
+let bm=isBookmarked(m,t)?'show':'';
+h+='<button class="sub-item '+(isT?'active':'')+'" onclick="selectTopic('+m+','+t+')">'+mod.topics[t].title+'<span class="bookmark-dot '+bm+'"></span></button>';
+}
+h+='</div></div>';
+}
+document.getElementById('modulesList').innerHTML=h;
+}
+
+function iconSvg(n){
+const i={brain:'<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>',layers:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',network:'<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>',eye:'<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',ear:'<path d="M6 8.5a6.5 6.5 0 0 1 13 0c0 6-3 9-6.5 11.5C9 20.5 6 17.5 6 8.5z"/><path d="M10 8.5a2.5 2.5 0 0 1 5 0"/>',activity:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'};
+return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">'+(i[n]||'')+'</svg>';
+}
+
+function renderContent(){
+let mod=modules[activeMod];
+let topic=mod.topics[activeTopic];
+let text=langMode==='medical'?topic.medical:topic.simple;
+let label=langMode==='medical'?'Bahasa Kedokteran':'Bahasa Sederhana';
+document.getElementById('breadcrumb').innerHTML='<span>'+mod.title+'</span><span style="color:var(--muted-steel)">&#8250;</span><span>'+topic.title+'</span>';
+document.getElementById('langLabel').textContent=label;
+let btn=document.getElementById('bookmarkBtn');
+if(isBookmarked(activeMod,activeTopic)){btn.classList.add('active');btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="var(--piercing-teal)" stroke="var(--piercing-teal)" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>';}
+else{btn.classList.remove('active');btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>';}
+
+let dots='';
+for(let i=0;i<mod.topics.length;i++)dots+='<div class="progress-dot '+(i===activeTopic?'active':'')+'" onclick="jumpTopic('+i+')" title="'+mod.topics[i].title+'"></div>';
+let pd=activeMod===0&&activeTopic===0?'disabled':'';
+let nd=activeMod===modules.length-1&&activeTopic===mod.topics.length-1?'disabled':'';
+let key=activeMod+'_'+activeTopic;
+let noteText=notes[key]||'';
+
+let h='<div class="content-header">';
+h+='<div class="content-mod">'+iconSvg(mod.icon)+' '+mod.title+'</div>';
+h+='<h1 class="content-title">'+topic.title+'</h1>';
+h+='<div class="content-actions">';
+h+='<button class="icon-btn '+(isBookmarked(activeMod,activeTopic)?'active':'')+'" onclick="toggleBookmark()">'+(isBookmarked(activeMod,activeTopic)?'<svg width="14" height="14" viewBox="0 0 24 24" fill="var(--piercing-teal)" stroke="var(--piercing-teal)" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>')+' Bookmark</button>';
+h+='<button class="icon-btn" onclick="toggleQuiz()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Soal Latihan</button>';
+h+='</div></div>';
+h+='<div class="content-card">';
+h+='<div class="content-label"><span class="dot"></span><span>'+label+'</span></div>';
+h+='<div class="content-text">'+text+'</div>';
+h+='</div>';
+h+='<div class="page-nav">';
+h+='<button class="btn-prev" '+pd+' onclick="goPrev()">&#8592; Sebelumnya</button>';
+h+='<div class="progress-dots">'+dots+'</div>';
+h+='<button class="btn-next" '+nd+' onclick="goNext()">Selanjutnya &#8594;</button>';
+h+='</div>';
+h+='<div class="notes-section">';
+h+='<div class="notes-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Catatan Pribadi</div>';
+h+='<textarea class="notes-textarea" placeholder="Tulis catatan Anda di sini..." oninput="saveNote(this.value)">'+noteText+'</textarea>';
+h+='</div>';
+h+='<div class="quiz-section" id="quizSection" style="display:none">';
+h+='<div class="quiz-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Soal Latihan</div>';
+let qs=quizzes[mod.id];
+if(qs){
+for(let i=0;i<qs.length;i++){
+let q=qs[i];
+h+='<div class="quiz-card">';
+h+='<div class="quiz-question">'+(i+1)+'. '+q.q+'</div>';
+h+='<div class="quiz-options">';
+for(let j=0;j<q.options.length;j++)h+='<button class="quiz-option" onclick="answerQuiz(this,'+i+','+j+','+q.correct+',\''+q.explanation.replace(/'/g,"\\'")+'\')">'+String.fromCharCode(97+j)+') '+q.options[j]+'</button>';
+h+='</div>';
+h+='<div class="quiz-explanation" id="qex_'+i+'"></div>';
+h+='</div>';
+}
+}
+h+='</div>';
+document.getElementById('contentArea').innerHTML=h;
+renderSidebar();
+}
+
+// ======================== ACTIONS ========================
+function selectMod(m){activeMod=m;activeTopic=0;renderContent();if(window.innerWidth<=768)toggleSidebar();}
+function selectTopic(m,t){activeMod=m;activeTopic=t;renderContent();if(window.innerWidth<=768)toggleSidebar();}
+function jumpTopic(t){activeTopic=t;renderContent();}
+function toggleLang(){langMode=langMode==='medical'?'simple':'medical';renderContent();}
+function goPrev(){if(activeTopic>0)activeTopic--;else if(activeMod>0){activeMod--;activeTopic=modules[activeMod].topics.length-1;}renderContent();}
+function goNext(){let mod=modules[activeMod];if(activeTopic<mod.topics.length-1)activeTopic++;else if(activeMod<modules.length-1){activeMod++;activeTopic=0;}renderContent();}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('mobileOverlay').classList.toggle('open');}
+
+// ======================== BOOKMARK ========================
+function isBookmarked(m,t){return bookmarks.some(b=>b.mod===m&&b.topic===t);}
+function toggleBookmark(){
+let idx=bookmarks.findIndex(b=>b.mod===activeMod&&b.topic===activeTopic);
+if(idx>=0)bookmarks.splice(idx,1);else bookmarks.push({mod:activeMod,topic:activeTopic,title:modules[activeMod].topics[activeTopic].title,modTitle:modules[activeMod].title,time:Date.now()});
+localStorage.setItem('mediced_bookmarks',JSON.stringify(bookmarks));
+renderContent();
+}
+function renderBookmarksPanel(){
+let h='';
+if(bookmarks.length===0)h='<div class="empty-state">Belum ada bookmark.<br>Tekan ikon bookmark di materi untuk menyimpan.</div>';
+else{
+for(let b of bookmarks.sort((a,c)=>c.time-a.time)){
+h+='<div class="bookmark-item" onclick="selectTopic('+b.mod+','+b.topic+');closePanel();">';
+h+='<div class="bookmark-item-title">'+b.title+'</div>';
+h+='<div class="bookmark-item-mod">'+b.modTitle+'</div></div>';
+}
+}
+document.getElementById('panelContent').innerHTML=h;
+}
+
+// ======================== PANEL ========================
+function openPanel(type){
+document.getElementById('panelOverlay').classList.add('open');
+document.getElementById('panel').classList.add('open');
+if(type==='bookmarks'){document.getElementById('panelTitle').textContent='Bookmark Saya';renderBookmarksPanel();}
+else if(type==='abbreviations'){document.getElementById('panelTitle').textContent='Singkatan Medis';renderAbbreviationsPanel();}
+}
+function closePanel(){document.getElementById('panelOverlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
+function renderAbbreviationsPanel(){
+let h='<div class="abb-section">';
+for(let a of abbreviations)h+='<div class="abb-card"><span class="abb-short">'+a.short+'</span><div><div class="abb-full">'+a.full+'</div><div class="abb-desc">'+a.desc+'</div></div></div>';
+h+='</div>';
+document.getElementById('panelContent').innerHTML=h;
+}
+
+// ======================== NOTES ========================
+function saveNote(v){let key=activeMod+'_'+activeTopic;notes[key]=v;localStorage.setItem('mediced_notes',JSON.stringify(notes));}
+
+// ======================== QUIZ ========================
+let quizVisible=false;
+function toggleQuiz(){quizVisible=!quizVisible;document.getElementById('quizSection').style.display=quizVisible?'block':'none';}
+function answerQuiz(el,qi,oi,correct,exp){
+let parent=el.closest('.quiz-options');
+let opts=parent.querySelectorAll('.quiz-option');
+opts.forEach(o=>o.style.pointerEvents='none');
+if(oi===correct)el.classList.add('correct');
+else{el.classList.add('wrong');opts[correct].classList.add('correct');}
+document.getElementById('qex_'+qi).textContent=exp;
+document.getElementById('qex_'+qi).classList.add('show');
+}
+
+// ======================== SEARCH ========================
+function handleSearch(q){
+q=q.toLowerCase().trim();
+let ml=document.getElementById('modulesList');
+let sr=document.getElementById('searchResults');
+if(!q){ml.style.display='block';sr.style.display='none';sr.classList.remove('open');return;}
+ml.style.display='none';sr.style.display='block';sr.classList.add('open');
+let r=[];
+for(let m=0;m<modules.length;m++){
+for(let t=0;t<modules[m].topics.length;t++){
+let tp=modules[m].topics[t];
+if(tp.title.toLowerCase().includes(q)||tp.medical.toLowerCase().includes(q)||tp.simple.toLowerCase().includes(q))r.push({m,t,mod:modules[m],top:tp});
+}
+}
+if(r.length===0){sr.innerHTML='<div class="no-results">Tidak ditemukan</div>';return;}
+let h='<div class="search-item" style="font-size:11px;font-weight:600;color:var(--ghost-text);text-transform:uppercase;padding:8px 12px">'+r.length+' hasil</div>';
+for(let i=0;i<Math.min(r.length,15);i++){
+let x=r[i];
+h+='<div class="search-item" onclick="selectTopic('+x.m+','+x.t+');document.getElementById(\'searchInput\').value=\'\';handleSearch(\'\');">';
+h+='<div class="search-item-title">'+iconSvg(x.mod.icon)+' '+x.top.title+'</div>';
+h+='<div class="search-item-mod">'+x.mod.title+'</div></div>';
+}
+sr.innerHTML=h;
+}
+
+// ======================== INIT ========================
+initTheme();
+renderSidebar();
+renderContent();
+</script>
+</body>
+</html>

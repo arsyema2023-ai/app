@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedicEd — Platform Belajar Kedokteran UNJA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --deep-void:var(--deep-void);
+      --clinical-navy:#0A1922;
+      --muted-steel:#112431;
+      --piercing-teal:#00C9A7;
+      --surgical-white:#E6F1FF;
+      --ghost-text:#5B7A8C;
+      --bg-body:var(--deep-void);
+      --text-body:#E6F1FF;
+    }
+    :root[data-theme="light"]{
+      --deep-void:#f0f4f8;
+      --clinical-navy:#ffffff;
+      --muted-steel:#d0d7de;
+      --piercing-teal:#008f7a;
+      --surgical-white:#1a2332;
+      --ghost-text:#5a6b7b;
+      --bg-body:#f0f4f8;
+      --text-body:#1a2332;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Montserrat',sans-serif;background:var(--bg-body);color:var(--text-body);-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:var(--deep-void)}
+    ::-webkit-scrollbar-thumb{background:#112431;border-radius:3px}
+    ::selection{background:rgba(0,201,167,0.3);color:var(--text-body)}
+
+    /* NAV */
+    .nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:80px;display:flex;align-items:center;background:var(--deep-void);backdrop-filter:blur(12px);border-bottom:1px solid var(--muted-steel);transition:background .3s}
+    .nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;width:100%}
+    .logo{font-size:20px;font-weight:700;color:var(--text-body);text-decoration:none}
+    .logo span{color:var(--piercing-teal)}
+    .nav-links{display:flex;align-items:center;gap:32px}
+    .nav-links a{font-size:14px;font-weight:500;color:var(--ghost-text);text-decoration:none;transition:color .25s}
+    .nav-links a:hover{color:var(--text-body)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;font-weight:600;cursor:pointer;border:none;text-decoration:none;font-size:14px;border-radius:8px;transition:all .3s}
+    .btn-primary{background:var(--piercing-teal);color:var(--deep-void);padding:12px 28px}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(0,201,167,0.3)}
+    .btn-ghost{background:transparent;border:1px solid var(--ghost-text);color:var(--text-body);padding:12px 28px}
+    .btn-ghost:hover{border-color:var(--piercing-teal);color:var(--piercing-teal)}
+    .btn-ghost-teal{border:1px solid var(--piercing-teal);color:var(--piercing-teal)}
+    .theme-btn-nav{width:36px;height:36px;border-radius:8px;border:1px solid var(--muted-steel);background:transparent;color:var(--ghost-text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-left:8px}
+    .theme-btn-nav:hover{border-color:var(--piercing-teal);color:var(--piercing-teal)}
+    .btn-lg{padding:16px 48px;font-size:16px}
+
+    /* SECTIONS */
+    .section{padding:120px 24px}
+    .section-inner{max-width:1280px;margin:0 auto}
+    .section-header{text-align:center;max-width:700px;margin:0 auto 64px}
+    .eyebrow{display:inline-flex;align-items:center;gap:16px;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--piercing-teal);margin-bottom:16px}
+    .eyebrow::before,.eyebrow::after{content:'';width:32px;height:1px;background:rgba(0,201,167,0.5)}
+    .section-title{font-size:48px;font-weight:700;color:var(--text-body);line-height:1.15;letter-spacing:-1.5px}
+    .section-desc{font-size:16px;color:var(--ghost-text);margin-top:16px;line-height:1.65}
+
+    /* HERO */
+    .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding-top:80px;padding-bottom:60px}
+    .hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+    .hero-fade{position:absolute;bottom:0;left:0;right:0;height:128px;background:linear-gradient(to top,var(--deep-void),transparent);pointer-events:none;z-index:1}
+    .hero-inner{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:48px}
+    .hero-left{flex:1}
+    .hero-right{width:40%;display:flex;justify-content:center}
+    .hero-title{font-size:64px;font-weight:700;color:var(--text-body);line-height:1.1;letter-spacing:-2px;margin-top:16px}
+    .hero-subtitle{font-size:18px;color:var(--ghost-text);margin-top:24px;max-width:520px;line-height:1.65}
+    .hero-cta{display:flex;gap:16px;margin-top:40px;flex-wrap:wrap}
+    .hero-stats{display:flex;gap:40px;margin-top:56px}
+    .hero-stat-num{font-size:32px;font-weight:700;color:var(--piercing-teal)}
+    .hero-stat-label{font-size:14px;color:var(--ghost-text);margin-top:4px}
+    .hero-visual{position:relative;width:350px;height:460px;animation:float 6s ease-in-out infinite}
+    .hero-visual img{width:100%;height:100%;object-fit:contain;opacity:.8;filter:drop-shadow(0 0 40px rgba(0,201,167,0.3))}
+    .orbit-ring{position:absolute;border:1px solid rgba(0,201,167,0.2);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}
+
+    /* CARDS */
+    .card{background:var(--clinical-navy);border:1px solid var(--muted-steel);border-radius:12px;padding:32px;position:relative;overflow:hidden;transition:all .35s}
+    .card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,201,167,0.06) 0%,transparent 50%);opacity:0;transition:opacity .35s;pointer-events:none}
+    .card:hover{border-color:rgba(0,201,167,0.3);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,201,167,0.08)}
+    .card:hover::before{opacity:1}
+    .card-icon{width:48px;height:48px;background:rgba(0,201,167,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+    .card-title{font-size:20px;font-weight:600;color:var(--text-body)}
+    .card-desc{font-size:14px;color:var(--ghost-text);margin-top:12px;line-height:1.6}
+    .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+    .tag{display:inline-flex;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;background:rgba(0,201,167,0.1);color:var(--piercing-teal)}
+
+    /* GRIDS */
+    .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:32px}
+    .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px}
+
+    /* FEATURES */
+    .features-row{display:flex;gap:64px;align-items:flex-start}
+    .features-left{flex:1}
+    .features-right{flex:1}
+    .feature-card{display:flex;gap:16px;align-items:flex-start;padding:28px;border-radius:12px;background:var(--clinical-navy);border:1px solid var(--muted-steel);margin-bottom:20px;transition:all .35s}
+    .feature-card:hover{border-color:rgba(0,201,167,0.3);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,201,167,0.08)}
+    .feature-num{width:40px;height:40px;border-radius:50%;background:#00C9A7;color:var(--deep-void);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+    .feature-title{font-size:18px;font-weight:600;color:var(--text-body)}
+    .feature-desc{font-size:14px;color:var(--ghost-text);margin-top:8px;line-height:1.6}
+
+    /* ORBIT */
+    .orbit-wrap{position:relative;width:250px;height:250px;margin-top:40px}
+    .orbit-ring-1{width:250px;height:250px;animation:ring1 20s linear infinite}
+    .orbit-ring-2{width:200px;height:200px;animation:ring2 25s linear infinite;top:50%;left:50%;transform:translate(-50%,-50%)}
+    .orbit-ring-3{width:150px;height:150px;animation:ring3 18s linear infinite;top:50%;left:50%;transform:translate(-50%,-50%)}
+    .orbit-dot{position:absolute;width:6px;height:6px;background:#00C9A7;border-radius:50%}
+
+    /* EKG */
+    .ekg-svg{width:100%;height:60px}
+    .ekg-line{stroke-dasharray:3000;stroke-dashoffset:3000;transition:stroke-dashoffset 2.5s ease-in-out}
+    .ekg-visible .ekg-line{stroke-dashoffset:0}
+
+    /* TIMELINE */
+    .timeline{position:relative;max-width:900px;margin:0 auto}
+    .timeline-line{position:absolute;left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%);background:linear-gradient(to bottom,#00C9A7,transparent)}
+    .timeline-item{position:relative;display:flex;align-items:center;margin-bottom:48px;opacity:0;transform:scale(0.8);transition:all .6s cubic-bezier(0.16,1,0.3,1)}
+    .timeline-item.visible{opacity:1;transform:scale(1)}
+    .timeline-item:nth-child(even){flex-direction:row-reverse}
+    .timeline-card{width:calc(50% - 40px);background:var(--clinical-navy);border:1px solid var(--muted-steel);border-radius:12px;padding:24px;transition:all .35s}
+    .timeline-card:hover{border-color:rgba(0,201,167,0.3);transform:translateY(-2px)}
+    .timeline-dot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;background:#00C9A7;border-radius:50%;box-shadow:0 0 12px rgba(0,201,167,0.5);z-index:2}
+    .timeline-step{font-size:12px;color:var(--piercing-teal);font-weight:500}
+    .timeline-title{font-size:18px;font-weight:600;color:var(--text-body)}
+    .timeline-desc{font-size:14px;color:var(--ghost-text);margin-top:8px;line-height:1.6}
+
+    /* FLASHCARD */
+    .fc-container{perspective:1000px;cursor:pointer}
+    .fc-inner{position:relative;width:100%;aspect-ratio:3/2;transition:transform .6s cubic-bezier(0.4,0,0.2,1);transform-style:preserve-3d}
+    .fc-container.flipped .fc-inner{transform:rotateY(180deg)}
+    .fc-front,.fc-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+    .fc-front{background:var(--clinical-navy);border:1px solid var(--muted-steel)}
+    .fc-back{background:rgba(0,201,167,0.05);border:1px solid rgba(0,201,167,0.3);transform:rotateY(180deg)}
+    .fc-label{font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--piercing-teal);margin-bottom:8px}
+    .fc-title{font-size:20px;font-weight:600;color:var(--text-body)}
+    .fc-def{font-size:14px;color:var(--text-body);line-height:1.6}
+    .fc-hint{font-size:12px;color:var(--ghost-text);margin-top:16px}
+
+    /* PRICING */
+    .pricing-panel{max-width:800px;margin:0 auto;text-align:center;padding:48px;border-radius:16px;background:rgba(10,25,34,0.4);backdrop-filter:blur(16px) saturate(140%);border:1px solid rgba(0,201,167,0.2);box-shadow:inset 0 1px 1px rgba(255,255,255,0.08),0 20px 60px rgba(0,0,0,0.4)}
+    .price{font-size:72px;font-weight:700;color:var(--piercing-teal);line-height:1}
+    .price-unit{font-size:18px;color:var(--ghost-text);margin-left:8px}
+    .price-list{max-width:400px;margin:32px auto 0;text-align:left}
+    .price-item{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .price-item svg{color:var(--piercing-teal);flex-shrink:0}
+    .price-item span{font-size:14px;color:rgba(230,241,255,0.9)}
+
+    /* FOOTER */
+    .footer{border-top:1px solid var(--muted-steel);background:var(--deep-void);padding-top:64px}
+    .footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:40px;max-width:1280px;margin:0 auto;padding:0 24px}
+    .footer h4{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-body);margin-bottom:16px}
+    .footer a,.footer span{display:block;font-size:14px;color:var(--ghost-text);text-decoration:none;margin-bottom:10px;transition:color .25s}
+    .footer a:hover{color:var(--piercing-teal)}
+    .footer-bottom{text-align:center;padding:24px;margin-top:48px;border-top:1px solid var(--muted-steel)}
+    .footer-bottom p{font-size:12px;color:var(--ghost-text);letter-spacing:.02em}
+
+    /* ANIMATIONS */
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    @keyframes ring1{0%{transform:translate(-50%,-50%) rotateX(70deg) rotateY(0deg) rotateZ(0deg)}100%{transform:translate(-50%,-50%) rotateX(70deg) rotateY(0deg) rotateZ(360deg)}}
+    @keyframes ring2{0%{transform:translate(-50%,-50%) rotateX(70deg) rotateY(60deg) rotateZ(360deg)}100%{transform:translate(-50%,-50%) rotateX(70deg) rotateY(60deg) rotateZ(0deg)}}
+    @keyframes ring3{0%{transform:translate(-50%,-50%) rotateX(70deg) rotateY(120deg) rotateZ(0deg)}100%{transform:translate(-50%,-50%) rotateX(70deg) rotateY(120deg) rotateZ(360deg)}}
+    @keyframes reveal{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulseGlow{0%,100%{box-shadow:0 0 5px rgba(0,201,167,0.3)}50%{box-shadow:0 0 20px rgba(0,201,167,0.6)}}
+
+    .reveal{opacity:0;transform:translateY(40px);transition:all .7s cubic-bezier(0.16,1,0.3,1)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+
+    /* MOBILE */
+    .mobile-toggle{display:none;background:none;border:none;color:var(--text-body);cursor:pointer}
+    .mobile-menu{display:none;position:absolute;top:80px;left:0;right:0;background:var(--clinical-navy);border-bottom:1px solid var(--muted-steel);padding:24px}
+    .mobile-menu a{display:block;padding:12px 0;color:var(--ghost-text);text-decoration:none;font-size:14px}
+    .mobile-menu .btn-primary{margin-top:16px;width:100%;text-align:center}
+
+    @media(max-width:768px){
+      .nav-links{display:none}
+      .mobile-toggle{display:block}
+      .mobile-menu.open{display:block}
+      .hero-inner{flex-direction:column}
+      .hero-right{width:100%;height:300px}
+      .hero-title{font-size:36px}
+      .section-title{font-size:32px}
+      .section{padding:80px 24px}
+      .features-row{flex-direction:column}
+      .timeline-line{left:24px}
+      .timeline-item,.timeline-item:nth-child(even){flex-direction:row}
+      .timeline-card{width:calc(100% - 60px);margin-left:48px}
+      .timeline-dot{left:24px}
+      .hero-visual{width:250px;height:300px}
+      .hero-stats{gap:24px}
+      .price{font-size:48px}
+      .hero-cta{flex-direction:column}
+      .hero-cta .btn{width:100%;justify-content:center}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="logo">Medic<span>Ed</span></a>
+    <div class="nav-links">
+      <a href="#hero">Beranda</a>
+      <a href="#modules">Materi</a>
+      <a href="#features">Fitur</a>
+      <a href="#flashcards">Flashcard</a>
+      <a href="#pricing">Harga</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <button class="theme-btn-nav" onclick="toggleTheme()" title="Ganti tema" id="themeBtn"><span id="themeIcon">&#9728;</span></button>
+      <a href="dashboard.html" class="btn btn-primary">Mulai Belajar</a>
+      <button class="mobile-toggle" onclick="document.getElementById('mobileMenu').classList.toggle('open')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#hero" onclick="closeMobile()">Beranda</a>
+    <a href="#modules" onclick="closeMobile()">Materi</a>
+    <a href="#features" onclick="closeMobile()">Fitur</a>
+    <a href="#flashcards" onclick="closeMobile()">Flashcard</a>
+    <a href="#pricing" onclick="closeMobile()">Harga</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="dashboard.html" class="btn btn-primary">Mulai Belajar</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <canvas class="hero-bg" id="neuralCanvas"></canvas>
+  <div class="hero-fade"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="eyebrow">Platform Belajar Kedokteran UNJA</div>
+      <h1 class="hero-title">Pahami Kedokteran Tanpa Batas</h1>
+      <p class="hero-subtitle">Sistem pembelajaran terstruktur dengan dual bahasa &mdash; bahasa kedokteran profesional dan penjelasan sederhana. 11 modul lengkap dari neuroanatomi hingga fisiologi indra.</p>
+      <div class="hero-cta">
+        <a href="#modules" class="btn btn-ghost btn-ghost-teal">Jelajahi Materi</a>
+        <a href="dashboard.html" class="btn btn-primary">Mulai Gratis</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hero-stat-num">11</div><div class="hero-stat-label">Modul</div></div>
+        <div><div class="hero-stat-num">500+</div><div class="hero-stat-label">Kartu</div></div>
+        <div><div class="hero-stat-num">2</div><div class="hero-stat-label">Bahasa</div></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-visual">
+        <img src="images/hero-molecule.png" alt="Molecular Structure">
+        <div class="orbit-ring orbit-ring-1" style="width:280px;height:280px"></div>
+        <div class="orbit-ring orbit-ring-2" style="width:280px;height:200px"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section class="section" style="background:var(--clinical-navy)" id="modules">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="eyebrow">Materi Lengkap</div>
+      <h2 class="section-title">11 Modul, Satu Sistem</h2>
+      <p class="section-desc">Semua materi disusun berdasarkan kurikulum FKIK Universitas Jambi, dari neuroanatomi dasar hingga fisiologi indra khusus.</p>
+    </div>
+    <div class="grid-3">
+      <!-- Module 1 -->
+      <div class="card reveal" style="transition-delay:.0s">
+        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg></div>
+        <div class="card-title">Neuroanatomi I</div>
+        <div class="card-desc">Sistem saraf pusat, neuron, neuroglia, cerebrum, brain stem, medulla spinalis</div>
+        <div class="tags"><span class="tag">SSP</span><span class="tag">Neuron</span><span class="tag">Cerebrum</span><span class="tag">Pons</span></div>
+      </div>
+      <!-- Module 2 -->
+      <div class="card reveal" style="transition-delay:.12s">
+        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+        <div class="card-title">Neuroanatomi II</div>
+        <div class="card-desc">Meninges, cerebrospinal fluid, brain lobes, cerebrovascular anatomy</div>
+        <div class="tags"><span class="tag">Dura</span><span class="tag">Arachnoid</span><span class="tag">CSF</span><span class="tag">Willis</span></div>
+      </div>
+      <!-- Module 3 -->
+      <div class="card reveal" style="transition-delay:.24s">
+        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
+        <div class="card-title">Neuroanatomi III</div>
+        <div class="card-desc">Sistem saraf tepi &mdash; 12 saraf kranial dan jaringan saraf spinal</div>
+        <div class="tags"><span class="tag">CN I-XII</span><span class="tag">Plexus</span></div>
+      </div>
+      <!-- Module 4 -->
+      <div class="card reveal" style="transition-delay:.36s">
+        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div class="card-title">Anatomi &amp; Histologi Mata</div>
+        <div class="card-desc">Anatomi bola mata, histologi kornea, lensa, retina, dan RPE</div>
+        <div class="tags"><span class="tag">3 Tunics</span><span class="tag">Cornea</span><span class="tag">RPE</span></div>
+      </div>
+      <!-- Module 5 -->
+      <div class="card reveal" style="transition-delay:.48s">
+        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5"><path d="M6 8.5a6.5 6.5 0 0 1 13 0c0 6-3 9-6.5 11.5C9 20.5 6 17.5 6 8.5z"/><path d="M10 8.5a2.5 2.5 0 0 1 5 0"/></svg></div>
+        <div class="card-title">Histologi Telinga</div>
+        <div class="card-desc">Telinga luar, tengah, dalam, koklea, organ of Corti</div>
+        <div class="tags"><span class="tag">Ossicles</span><span class="tag">Cochlea</span><span class="tag">Basilar</span></div>
+      </div>
+      <!-- Module 6 -->
+      <div class="card reveal" style="transition-delay:.60s">
+        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="card-title">Fisiologi Indra</div>
+        <div class="card-desc">Fisiologi penglihatan, pendengaran, penciuman, dan pengecapan</div>
+        <div class="tags"><span class="tag">Fotoreseptor</span><span class="tag">Akomodasi</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" style="background:var(--deep-void)" id="features">
+  <div class="section-inner">
+    <div class="features-row">
+      <div class="features-left reveal">
+        <div class="eyebrow" style="justify-content:flex-start">Fitur Interaktif</div>
+        <h2 class="section-title" style="text-align:left">Belajar Sesuai<br>Ritme Anda</h2>
+        <div class="orbit-wrap">
+          <div class="orbit-ring orbit-ring-1"></div>
+          <div class="orbit-ring orbit-ring-2"></div>
+          <div class="orbit-ring orbit-ring-3"></div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;background:#00C9A7;border-radius:50%;animation:pulseGlow 3s ease-in-out infinite"></div>
+        </div>
+      </div>
+      <div class="features-right">
+        <div class="feature-card reveal" style="transition-delay:.0s">
+          <div class="feature-num"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--deep-void)" stroke-width="2.5"><path d="M5 8l6 6M4 14l4-4M12 14l4-4M19 8l-6 6M2 5h20M2 19h20"/></svg></div>
+          <div><div class="feature-title">Dual Bahasa</div><div class="feature-desc">Tiap konsep dijelaskan dalam bahasa kedokteran profesional dan terjemahan sederhana untuk pemahaman maksimal</div></div>
+        </div>
+        <div class="feature-card reveal" style="transition-delay:.15s;margin-left:0">
+          <div class="feature-num"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--deep-void)" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <div><div class="feature-title">Flashcard Interaktif</div><div class="feature-desc">500+ kartu belajar dengan sistem flip &mdash; uji diri Anda kapan saja, istilah di depan, definisi di belakang</div></div>
+        </div>
+        <div class="feature-card reveal" style="transition-delay:.30s;margin-left:0">
+          <div class="feature-num"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--deep-void)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
+          <div><div class="feature-title">Pencarian Cepat</div><div class="feature-desc">Temukan materi, istilah medis, atau konsep dalam detik dengan sistem pencarian terintegrasi</div></div>
+        </div>
+        <div class="feature-card reveal" style="transition-delay:.45s;margin-left:0">
+          <div class="feature-num"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--deep-void)" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div><div class="feature-title">Progress Tracking</div><div class="feature-desc">Dashboard visual memantau progress belajar Anda per modul dengan indikator completion</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EKG DIVIDER -->
+<div style="background:var(--deep-void);padding:0" id="ekgSection">
+  <svg class="ekg-svg" viewBox="0 0 1200 60" preserveAspectRatio="none">
+    <path class="ekg-line" d="M0,30 L200,30 L220,30 L240,10 L260,50 L280,30 L300,30 L500,30 L520,30 L540,10 L560,50 L580,30 L600,30 L800,30 L820,30 L840,10 L860,50 L880,30 L900,30 L1100,30 L1200,30" fill="none" stroke="#00C9A7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
+
+<!-- TIMELINE -->
+<section class="section" style="background:var(--clinical-navy)" id="timeline">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="eyebrow">Alur Pembelajaran</div>
+      <h2 class="section-title">Dari Dasar hingga Spesialis</h2>
+    </div>
+    <div class="timeline">
+      <div class="timeline-line"></div>
+      <div class="timeline-item">
+        <div class="timeline-card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+            <div class="card-icon" style="width:36px;height:36px;margin:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg></div>
+            <div>
+              <div class="timeline-step">Langkah 01</div>
+              <div class="timeline-title">Neuroanatomi Dasar</div>
+            </div>
+          </div>
+          <div class="timeline-desc">Memahami struktur SSP, neuron, neuroglia, dan organisasi sistem saraf</div>
+        </div>
+        <div class="timeline-dot"></div>
+        <div style="width:calc(50% - 40px)"></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+            <div class="card-icon" style="width:36px;height:36px;margin:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
+            <div>
+              <div class="timeline-step">Langkah 02</div>
+              <div class="timeline-title">Saraf Tepi &amp; Otonom</div>
+            </div>
+          </div>
+          <div class="timeline-desc">Mempelajari 12 saraf kranial, sistem saraf somatis, dan regulasi otonom</div>
+        </div>
+        <div class="timeline-dot"></div>
+        <div style="width:calc(50% - 40px)"></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+            <div class="card-icon" style="width:36px;height:36px;margin:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <div>
+              <div class="timeline-step">Langkah 03</div>
+              <div class="timeline-title">Anatomi &amp; Histologi Mata</div>
+            </div>
+          </div>
+          <div class="timeline-desc">Menelusuri 3 tunics mata, histologi kornea, lensa, dan 10 lapisan retina</div>
+        </div>
+        <div class="timeline-dot"></div>
+        <div style="width:calc(50% - 40px)"></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+            <div class="card-icon" style="width:36px;height:36px;margin:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5"><path d="M6 8.5a6.5 6.5 0 0 1 13 0c0 6-3 9-6.5 11.5C9 20.5 6 17.5 6 8.5z"/><path d="M10 8.5a2.5 2.5 0 0 1 5 0"/></svg></div>
+            <div>
+              <div class="timeline-step">Langkah 04</div>
+              <div class="timeline-title">Histologi Telinga</div>
+            </div>
+          </div>
+          <div class="timeline-desc">Mengkaji telinga luar hingga dalam, koklea, dan organ of Corti</div>
+        </div>
+        <div class="timeline-dot"></div>
+        <div style="width:calc(50% - 40px)"></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+            <div class="card-icon" style="width:36px;height:36px;margin:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div>
+              <div class="timeline-step">Langkah 05</div>
+              <div class="timeline-title">Fisiologi Indra</div>
+            </div>
+          </div>
+          <div class="timeline-desc">Memahami mekanisme penglihatan, pendengaran, penciuman, dan pengecapan</div>
+        </div>
+        <div class="timeline-dot"></div>
+        <div style="width:calc(50% - 40px)"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLASHCARDS -->
+<section class="section" style="background:var(--deep-void)" id="flashcards">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="eyebrow">Flashcard</div>
+      <h2 class="section-title">Uji Pengetahuan Anda</h2>
+      <p class="section-desc">Klik kartu untuk membaliknya. Pelajari istilah medis dengan sistem dual bahasa.</p>
+    </div>
+    <div class="grid-3">
+      <div class="fc-container reveal" onclick="this.classList.toggle('flipped')" style="transition-delay:0s">
+        <div class="fc-inner">
+          <div class="fc-front"><span class="fc-label">Istilah Medis</span><h4 class="fc-title">Cerebrum</h4><span class="fc-hint">Klik untuk membalik</span></div>
+          <div class="fc-back"><span class="fc-label">Definisi</span><p class="fc-def">Bagian terbesar otak yang terdiri dari dua hemisfer, mengontrol fungsi kognitif tinggi, emosi, dan gerakan volunter</p><span class="fc-hint">Klik untuk kembali</span></div>
+        </div>
+      </div>
+      <div class="fc-container reveal" onclick="this.classList.toggle('flipped')" style="transition-delay:.1s">
+        <div class="fc-inner">
+          <div class="fc-front"><span class="fc-label">Istilah Medis</span><h4 class="fc-title">Neuroglia</h4><span class="fc-hint">Klik untuk membalik</span></div>
+          <div class="fc-back"><span class="fc-label">Definisi</span><p class="fc-def">Sel pendukung sistem saraf yang meliputi astrosit, oligodendrosit, dan mikroglia. Jumlahnya 10x lebih banyak dari neuron</p><span class="fc-hint">Klik untuk kembali</span></div>
+        </div>
+      </div>
+      <div class="fc-container reveal" onclick="this.classList.toggle('flipped')" style="transition-delay:.2s">
+        <div class="fc-inner">
+          <div class="fc-front"><span class="fc-label">Istilah Medis</span><h4 class="fc-title">Tunica Fibrosa</h4><span class="fc-hint">Klik untuk membalik</span></div>
+          <div class="fc-back"><span class="fc-label">Definisi</span><p class="fc-def">Lapisan terluar bola mata, terdiri dari sklera (5/6 posterior) dan kornea (1/6 anterior). Melindungi struktur internal</p><span class="fc-hint">Klik untuk kembali</span></div>
+        </div>
+      </div>
+      <div class="fc-container reveal" onclick="this.classList.toggle('flipped')" style="transition-delay:0s">
+        <div class="fc-inner">
+          <div class="fc-front"><span class="fc-label">Istilah Medis</span><h4 class="fc-title">Crista Ampullaris</h4><span class="fc-hint">Klik untuk membalik</span></div>
+          <div class="fc-back"><span class="fc-label">Definisi</span><p class="fc-def">Reseptor sensorik dalam ampula kanalis semisirkularis untuk mendeteksi percepatan sudut dan rotasi kepala</p><span class="fc-hint">Klik untuk kembali</span></div>
+        </div>
+      </div>
+      <div class="fc-container reveal" onclick="this.classList.toggle('flipped')" style="transition-delay:.1s">
+        <div class="fc-inner">
+          <div class="fc-front"><span class="fc-label">Istilah Medis</span><h4 class="fc-title">Rod Cell</h4><span class="fc-hint">Klik untuk membalik</span></div>
+          <div class="fc-back"><span class="fc-label">Definisi</span><p class="fc-def">Fotoreseptor sensitif cahaya redup, mengandung rhodopsin, tersebar di retina kecuali fovea. Jumlah ~100 juta</p><span class="fc-hint">Klik untuk kembali</span></div>
+        </div>
+      </div>
+      <div class="fc-container reveal" onclick="this.classList.toggle('flipped')" style="transition-delay:.2s">
+        <div class="fc-inner">
+          <div class="fc-front"><span class="fc-label">Istilah Medis</span><h4 class="fc-title">Lens Accommodation</h4><span class="fc-hint">Klik untuk membalik</span></div>
+          <div class="fc-back"><span class="fc-label">Definisi</span><p class="fc-def">Kemampuan lensa menyesuaikan kekuatan refraksi untuk fokus pada objek dekat dan jauh melalui kontraksi otot siliaris</p><span class="fc-hint">Klik untuk kembali</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" style="background:var(--deep-void);position:relative;overflow:hidden" id="pricing">
+  <canvas style="position:absolute;inset:0;opacity:.06;pointer-events:none" id="pricingCanvas"></canvas>
+  <div class="section-inner" style="position:relative;z-index:2">
+    <div class="pricing-panel reveal">
+      <div class="eyebrow">Harga</div>
+      <h2 class="section-title" style="margin-top:16px">Investasi untuk<br>Masa Depan</h2>
+      <div style="margin-top:32px;display:flex;align-items:baseline;justify-content:center;gap:8px">
+        <span class="price">Rp50.000</span>
+        <span class="price-unit">/ modul</span>
+      </div>
+      <div class="price-list">
+        <div class="price-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Akses seumur hidup per modul</span></div>
+        <div class="price-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Update materi berkala</span></div>
+        <div class="price-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Flashcard &amp; latihan soal</span></div>
+      </div>
+      <div style="margin-top:40px">
+        <a href="https://wa.me/6281330039520" target="_blank" class="btn btn-primary btn-lg" style="display:inline-flex">Pesan Sekarang</a>
+      </div>
+      <p style="margin-top:24px;font-size:14px;color:var(--ghost-text)">Pemesanan &amp; Informasi: <a href="https://wa.me/6281330039520" target="_blank" style="color:var(--piercing-teal);text-decoration:none">WhatsApp 0813-3003-9520</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer" id="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="logo" style="margin-bottom:12px">Medic<span>Ed</span></div>
+      <p style="font-size:14px;color:var(--ghost-text);line-height:1.6">Platform belajar kedokteran untuk mahasiswa FKIK Universitas Jambi</p>
+    </div>
+    <div>
+      <h4>Modul</h4>
+      <a href="dashboard.html">Neuroanatomi</a>
+      <a href="dashboard.html">Histologi</a>
+      <a href="dashboard.html">Fisiologi</a>
+      <a href="dashboard.html">Flashcard</a>
+    </div>
+    <div>
+      <h4>Tentang</h4>
+      <span>Kurikulum</span>
+      <span>Kontak</span>
+      <span>FAQ</span>
+    </div>
+    <div>
+      <h4>Kontak</h4>
+      <a href="mailto:mediced.unja@gmail.com">mediced.unja@gmail.com</a>
+      <a href="https://wa.me/6281330039520" target="_blank">WhatsApp: 0813-3003-9520</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 MedicEd. Dibuat untuk mahasiswa kedokteran Unja.</p>
+  </div>
+</footer>
+
+<script>
+// Neural Network Canvas
+function initCanvas(id,opacity){
+  var c=document.getElementById(id);
+  if(!c)return;
+  var ctx=c.getContext('2d'),w,h,nodes=[],count=60,dist=150;
+  function resize(){var p=c.parentElement;w=p.offsetWidth;h=p.offsetHeight;c.width=w;c.height=h}
+  function init(){nodes.length=0;for(var i=0;i<count;i++)nodes.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4})}
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(var i=0;i<nodes.length;i++){var n=nodes[i];n.x+=n.vx;n.y+=n.vy;if(n.x<0)n.x=w;if(n.x>w)n.x=0;if(n.y<0)n.y=h;if(n.y>h)n.y=0}
+    for(var i=0;i<nodes.length;i++)for(var j=i+1;j<nodes.length;j++){var dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<dist){ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle='rgba(0,201,167,'+(1-d/dist)*opacity+')';ctx.lineWidth=.5;ctx.stroke()}}
+    for(var i=0;i<nodes.length;i++){ctx.beginPath();ctx.arc(nodes[i].x,nodes[i].y,2,0,Math.PI*2);ctx.fillStyle='rgba(0,201,167,'+opacity+')';ctx.fill()}
+    requestAnimationFrame(draw)
+  }
+  resize();init();draw();
+  window.addEventListener('resize',function(){resize();init()})
+}
+initCanvas('neuralCanvas',0.12);
+initCanvas('pricingCanvas',0.06);
+
+// Scroll reveal
+function observeReveal(){
+  var els=document.querySelectorAll('.reveal,.timeline-item');
+  var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.15});
+  els.forEach(function(el){obs.observe(el)});
+}
+observeReveal();
+
+// EKG animation
+(function(){var s=document.getElementById('ekgSection');if(!s)return;var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)s.classList.add('ekg-visible')})},{threshold:.3});obs.observe(s)})();
+
+// Mobile menu
+function closeMobile(){document.getElementById('mobileMenu').classList.remove('open')}
+
+// Navbar scroll
+window.addEventListener('scroll',function(){var n=document.getElementById('navbar');if(window.scrollY>60)n.style.background='var(--deep-void)';else n.style.background='var(--deep-void)'});
+
+// Theme toggle
+function initTheme(){var t=localStorage.getItem('mediced_theme')||'dark';document.documentElement.setAttribute('data-theme',t);document.getElementById('themeIcon').innerHTML=t==='light'?'&#9790;':'&#9728;';}
+function toggleTheme(){var cur=document.documentElement.getAttribute('data-theme')||'dark';var next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('mediced_theme',next);document.getElementById('themeIcon').innerHTML=next==='light'?'&#9790;':'&#9728;';}
+initTheme();
+</script>
+</body>
+</html>
